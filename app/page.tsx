@@ -1,19 +1,22 @@
 import Image from "next/image";
 import { useEffect } from "react";
-import FBInit from "@/app/components/fbinit";
-import { initFacebookSdk } from "@/app/lib/initFBSDK";
-import FacebookLoginButton from "./components/FacebookLoginBtn";
-
-initFacebookSdk().then(Home);
+import FacebookLoginButton from "@/app/components/FacebookLoginBtn";
+import React from "react";
+import MyApp from "@/app/_app";
+import SignInUpSwitch from "./components/SignInUpSwitch";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col">
-      <div className="flex w-full h-16 border-b items-center justify-center border-slate-300">
+    <main className="flex min-h-screen flex-col h-full w-full">
+      <div className="flex w-full h-16 border-b items-center justify-center border-slate-300 bg-white">
         <p className="flex items-center text-2xl md:text-3xl">Medianalytics</p>
       </div>
-      <FBInit />
-      <FacebookLoginButton />
+    <div className="absolute right-0 border-l border-slate-300 w-2/5 h-[calc(100%_-_4rem)] top-16">
+      <SignInUpSwitch />
+    </div>
+      <div className="hidden">
+        <FacebookLoginButton />      
+      </div>
     </main>
   );
 }
