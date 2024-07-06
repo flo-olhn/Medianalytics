@@ -30,11 +30,10 @@ export default function FBInit() {
         });
     }
 
-
-
+    
     return (
-        <div>
-        <button onClick={login}>Login</button>
-        </div>
+        <>
+          <button onClick={login}>Login</button>
+        </>
     );
 }

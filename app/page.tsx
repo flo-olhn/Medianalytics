@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useEffect } from "react";
 import FBInit from "@/app/components/fbinit";
 import { initFacebookSdk } from "@/app/lib/initFBSDK";
+import FacebookLoginButton from "./components/FacebookLoginBtn";
 
 initFacebookSdk().then(Home);
 
@@ -12,7 +13,7 @@ export default function Home() {
         <p className="flex items-center text-2xl md:text-3xl">Medianalytics</p>
       </div>
       <FBInit />
-      
+      <FacebookLoginButton />
     </main>
   );
 }
