@@ -2,7 +2,6 @@ import Image from "next/image";
 import { useEffect } from "react";
 import FacebookLoginButton from "@/app/components/FacebookLoginBtn";
 import React from "react";
-import MyApp from "@/app/_app";
 import SignInUpSwitch from "./components/SignInUpSwitch";
 
 export default function Home() {
