@@ -52,8 +52,8 @@ export default function SignInUpSwitch() {
                 {signIn &&
                     <>
                         <form action="" method="post" className="">
-                            <input type="text" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border-2 focus:scale-110" placeholder="Email address" /><br />
-                            <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border-2 focus:scale-110" placeholder="Password" />
+                            <input type="text" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border-2 focus:scale-110" placeholder="Email address" required /><br />
+                            <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border-2 focus:scale-110" placeholder="Password" required />
                             <input type="submit" value="Sign In" className="w-full h-14 rounded bg-slate-200 outline-none mt-12 hover:bg-blue-500 hover:text-white hover:cursor-pointer transition duration-300 focus:bg-blue-600" />
                         </form>
                     </>
