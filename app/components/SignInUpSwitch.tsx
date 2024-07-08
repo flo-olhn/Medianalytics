@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 
 export default function SignInUpSwitch() {
     const [signIn, setSignIn] = useState(true);
     const [signUp, setSignUp] = useState(false);
+    const [passwordConfirmed, setPasswordConfirmed] = useState(false);
+    const [password, setPassword] = useState('');
+    const [passconf, setPassConf] = useState('');
     function handleSignIn() {
         setSignIn(true);
         setSignUp(false);
@@ -13,6 +16,18 @@ export default function SignInUpSwitch() {
         setSignIn(false);
         setSignUp(true);
     };
+    function getPassword(p: { target: { value: SetStateAction<string>; }; }) {
+        console.log("password: ", p.target.value);
+        setPassword(p.target.value);
+        setPasswordConfirmed(password == passconf);
+        console.log(passwordConfirmed);
+    }
+    function getPassConf(p: { target: { value: SetStateAction<string>; }; }) {
+        console.log("passconf: ", p.target.value);
+        setPassConf(p.target.value);
+        setPasswordConfirmed(password == passconf);
+        console.log(passwordConfirmed);
+    }
     return (
         <>
             <div className="flex w-full h-16">
@@ -36,8 +51,11 @@ export default function SignInUpSwitch() {
                 <>
                     <form action="" method="post" className="">
                         <input type="text" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border-2 focus:scale-110" placeholder="Email address" /><br />
-                        <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border-2 focus:scale-110" placeholder="Password" /><br />
-                        <input type="password" name="confirm-password" id="confirm-password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border-2 focus:scale-110 mt-6" placeholder="Confirm Password" />
+                        <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border-2 focus:scale-110" placeholder="Password" onChange={getPassword} /><br />
+                        {passwordConfirmed ?
+                            <input type="password" name="confirm-password" id="confirm-password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-green-500 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border-2 focus:scale-110 mt-6" placeholder="Confirm Password" onChange={getPassConf} /> :
+                            <input type="password" name="confirm-password" id="confirm-password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-red-500 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border-2 focus:scale-110 mt-6" placeholder="Confirm Password" onChange={getPassConf} />
+                        }
                         <input type="submit" value="Sign Up" className="w-full h-14 rounded bg-slate-200 outline-none mt-12 hover:bg-blue-500 hover:text-white hover:cursor-pointer transition duration-300 focus:bg-blue-600" />
                     </form>
                 </>
