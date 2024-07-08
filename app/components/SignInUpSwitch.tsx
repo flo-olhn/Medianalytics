@@ -1,6 +1,6 @@
 'use client';
 
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function SignInUpSwitch() {
   const [signIn, setSignIn] = useState(true);
