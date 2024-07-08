@@ -26,7 +26,7 @@ export default function SignInUpSwitch() {
         const currentValue = event.target.value;
         passconf = currentValue;
         setPassConf(currentValue);
-        setConfirmed
+        setConfirmed();
     };
     function setConfirmed() {
         if (password === '' || passconf === '') {
@@ -60,12 +60,16 @@ export default function SignInUpSwitch() {
                 }
                 {signUp &&
                 <>
-                    <form action="" method="post" className="" onChange={setConfirmed}>
+                    <form action="" method="post" className="">
                         <input type="text" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Email address" required /><br />
                         <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Password" required onChange={(event) => getPassword(event)} /><br />
-                        {passwordConfirmed ?
-                            <input type="password" name="confirm-password" id="confirm-password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-green-500 outline-none focus:bg-slate-200 transition duration-300 focus:border-green-500 focus:border  mt-6" placeholder="Confirm Password" required onChange={getPassConf} /> :
-                            <input type="password" name="confirm-password" id="confirm-password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-red-500 outline-none focus:bg-slate-200 transition duration-300 focus:border-red-500 focus:border  mt-6" placeholder="Confirm Password" required onChange={getPassConf} />
+
+                        {passconf === '' ?
+                            <input type="password" name="confirm-password" id="confirm-password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border  mt-6" placeholder="Confirm Password" required onChange={getPassConf} /> :
+                            (passwordConfirmed ?
+                                <input type="password" name="confirm-password" id="confirm-password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-green-500 outline-none focus:bg-slate-200 transition duration-300 focus:border-green-500 focus:border  mt-6" placeholder="Confirm Password" required onChange={getPassConf} /> :
+                                <input type="password" name="confirm-password" id="confirm-password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-red-500 outline-none focus:bg-slate-200 transition duration-300 focus:border-red-500 focus:border  mt-6" placeholder="Confirm Password" required onChange={getPassConf} />
+                            )
                         }
                         {passwordConfirmed ?
                             <input type="submit" value="Sign Up" className="w-full h-14 rounded bg-slate-200 outline-none mt-12 hover:bg-blue-500 hover:text-white hover:cursor-pointer transition duration-300 focus:bg-blue-600" /> :
