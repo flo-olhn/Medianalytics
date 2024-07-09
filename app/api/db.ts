@@ -2,9 +2,9 @@ import { db } from "@vercel/postgres";
 import { UUID } from "crypto";
 
 const client = await db.connect();
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
 
-async function seedUsers(data = []) {
+export async function seedUsers(data) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
@@ -23,10 +23,10 @@ async function seedUsers(data = []) {
         email : String,
         password : String
       }) => {
-        const hashedPassword = await bcrypt.hash(user.password, 10);
+        //const hashedPassword = await bcrypt.hash(user.password, 10);
         return client.sql`
         INSERT INTO users(id, email, password)
-        VALUES (${user.id}, ${user.email}, ${hashedPassword})
+        VALUES (${user.id}, ${user.email}, ${user.password})
         ON CONFLICT (id) DO NOTHING;
         `;
       }),

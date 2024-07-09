@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from "react";
+import { NextApiRequest, NextApiResponse } from "next";
+import { seedUsers } from "../api/db";
 
 export default function SignInUpSwitch() {
   const [signIn, setSignIn] = useState(true);
@@ -60,21 +62,21 @@ export default function SignInUpSwitch() {
       }
     }
   };
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const postData = new FormData();
-    postData.append('email', formData.email);
-    postData.append('password', formData.password);
-    const response = await fetch('api/db', {
-      headers: {
-        accept: 'application/json',
-        'User-agent': 'learning app',
-      },
-      method: 'POST',
-      body: JSON.stringify(postData.values),
-    })
-    const data = await response.json();
-    console.log(data);
+  const handleSubmit = async (req: NextApiRequest, res: NextApiResponse) => {
+    
+    if (req.method === "POST") {
+      const { email, password } = req.body;
+      
+      try {
+        const result = await seedUsers(formData);
+        res.status(200).json({ success: true, data: result });
+      } catch (error) {
+        res.status(500).json({ success: false, message: 'DB Error' });
+      }
+    } else {
+      res.setHeader('Allow', ['POST']);
+      res.status(405).end(`Method ${req.method} Not Allowed`);
+    }
   };
   return (
     <>
@@ -97,7 +99,7 @@ export default function SignInUpSwitch() {
         }
         {signUp &&
           <>
-            <form action="" method="post" className="" onSubmit={handleSubmit}>
+            <form action="" method="post" className="" onSubmit={(event) => handleSubmit}>
               <input type="email" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Email address" required onChange={(event) => getEmail(event)} /><br />
               <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Password" required onChange={(event) => getPassword(event)} /><br />
               {passconf === '' ?
