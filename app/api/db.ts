@@ -18,7 +18,11 @@ async function seedUsers(data = []) {
     console.log('Created "users" table');
 
     const insertedUsers = await Promise.all(
-      data.map(async (user) => {
+      data.map(async (user : {
+        id : UUID,
+        email : String,
+        password : String
+      }) => {
         const hashedPassword = await bcrypt.hash(user.password, 10);
         return client.sql`
         INSERT INTO users(id, email, password)
@@ -27,7 +31,14 @@ async function seedUsers(data = []) {
         `;
       }),
     );
+    console.log('Seeded new user');
+
+    return {
+      createTable,
+      data: insertedUsers,
+    }
   } catch (error) {
-    
+    console.error('Error seeding users:', error);
+    throw error;
   }
 }

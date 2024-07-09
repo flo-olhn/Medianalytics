@@ -8,6 +8,11 @@ export default function SignInUpSwitch() {
   const [passwordConfirmed, setPasswordConfirmed] = useState(false);
   var [password, setPassword] = useState('');
   var [passconf, setPassConf] = useState('');
+  var [email, setEmail] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
   
   function handleSignIn() {
     setSignIn(true);
@@ -17,11 +22,26 @@ export default function SignInUpSwitch() {
     setSignIn(false);
     setSignUp(true);
   };
+  const getEmail = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const currentValue = event.target.value;
+    email = currentValue;
+    setEmail(currentValue);
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  }
   const getPassword = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const currentValue = event.target.value;
     password = currentValue;
     setPassword(currentValue);
     setConfirmed();
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
   };
   const getPassConf = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const currentValue = event.target.value;
@@ -39,6 +59,22 @@ export default function SignInUpSwitch() {
         setPasswordConfirmed(false);
       }
     }
+  };
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const postData = new FormData();
+    postData.append('email', formData.email);
+    postData.append('password', formData.password);
+    const response = await fetch('api/db', {
+      headers: {
+        accept: 'application/json',
+        'User-agent': 'learning app',
+      },
+      method: 'POST',
+      body: JSON.stringify(postData.values),
+    })
+    const data = await response.json();
+    console.log(data);
   };
   return (
     <>
@@ -61,8 +97,8 @@ export default function SignInUpSwitch() {
         }
         {signUp &&
           <>
-            <form action="" method="post" className="">
-              <input type="email" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Email address" required /><br />
+            <form action="" method="post" className="" onSubmit={handleSubmit}>
+              <input type="email" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Email address" required onChange={(event) => getEmail(event)} /><br />
               <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Password" required onChange={(event) => getPassword(event)} /><br />
               {passconf === '' ?
                 <input type="password" name="confirm-password" id="confirm-password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border  mt-6" placeholder="Confirm Password" required onChange={getPassConf} /> :
