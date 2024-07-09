@@ -18,14 +18,21 @@ export async function POST(req: Request) {
     `;
     console.log('Created "users" table');
     const { email, password } = await req.json();
+    const hashedPassword = await new Promise((resolve, reject) => {
+      bcrypt.hash(password, 10, function(err: any, hash: string | PromiseLike<string>) {
+        if (err) reject(err);
+        resolve(hash);
+      });
+    }) as string;
+    console.log(hashedPassword);
     try {
       const insertedUsers = await client.sql`
-        INSERT INTO users(email, password) VALUES(${email}, ${password}) ON CONFLICT (id) DO NOTHING;
+        INSERT INTO users(email, password) VALUES(${email}, ${hashedPassword}) ON CONFLICT (id) DO NOTHING;
       `;
       return NextResponse.json({ success: true, data: insertedUsers.rows[0]});
     } catch(error) {
       console.error('Database error:', error);
-      return Response.json({ success: false, message: 'Database error' });
+      return NextResponse.json({ success: false, message: 'Database error' });
     }
     console.log('Seeded new user');
   } catch (error) {

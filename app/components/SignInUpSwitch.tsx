@@ -9,10 +9,6 @@ export default function SignInUpSwitch() {
   var [password, setPassword] = useState('');
   var [passconf, setPassConf] = useState('');
   var [email, setEmail] = useState('');
-  const [formData, setFormData] = useState([{
-    email: '',
-    password: '',
-  }]);
   
   function handleSignIn() {
     setSignIn(true);
@@ -26,22 +22,12 @@ export default function SignInUpSwitch() {
     const currentValue = event.target.value;
     email = currentValue;
     setEmail(currentValue);
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
   }
   const getPassword = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const currentValue = event.target.value;
     password = currentValue;
     setPassword(currentValue);
     setConfirmed();
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
   };
   const getPassConf = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const currentValue = event.target.value;
@@ -75,12 +61,14 @@ export default function SignInUpSwitch() {
     const data = await res.json();
     if (data.success) {
       console.log('Form submitted successfully');
+      setPassConf('');
       setEmail('');
       setPassword('');
-      setPassConf('');
+      setPasswordConfirmed(false);
     } else {
       console.log('Form submission failed');
     }
+    console.log('passconf', passconf, 'password', password, passwordConfirmed);
   };
   return (
     <>
