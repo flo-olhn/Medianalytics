@@ -1,10 +1,10 @@
 import { db } from "@vercel/postgres";
-import { UUID } from "crypto";
+import { NextApiRequest, NextApiResponse } from "next";
 
 const client = await db.connect();
-//const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 
-export async function seedUsers(data) {
+export async function seedUsers(req: NextApiRequest, res: NextApiResponse) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
@@ -16,29 +16,19 @@ export async function seedUsers(data) {
       );
     `;
     console.log('Created "users" table');
-
-    const insertedUsers = await Promise.all(
-      data.map(async (user : {
-        id : UUID,
-        email : String,
-        password : String
-      }) => {
-        //const hashedPassword = await bcrypt.hash(user.password, 10);
-        return client.sql`
-        INSERT INTO users(id, email, password)
-        VALUES (${user.id}, ${user.email}, ${user.password})
-        ON CONFLICT (id) DO NOTHING;
-        `;
-      }),
-    );
+    const { email, password } = req.body;
+    const insertedUsers = await client.sql`
+      INSERT INTO users(email, password) VALUES(${email}, ${password}) ON CONFLICT (id) DO NOTHING;
+    `;
     console.log('Seeded new user');
-
+    res.status(200).json({ success: true, data: insertedUsers.rows[0] });
     return {
       createTable,
       data: insertedUsers,
     }
   } catch (error) {
+    res.status(500).json({ success: false, data: 'DB Error' });
     console.error('Error seeding users:', error);
     throw error;
-  }
+  } 
 }

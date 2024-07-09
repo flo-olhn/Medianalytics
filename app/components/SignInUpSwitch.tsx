@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from "react";
-import { NextApiRequest, NextApiResponse } from "next";
-import { seedUsers } from "../api/db";
 
 export default function SignInUpSwitch() {
   const [signIn, setSignIn] = useState(true);
@@ -11,10 +9,10 @@ export default function SignInUpSwitch() {
   var [password, setPassword] = useState('');
   var [passconf, setPassConf] = useState('');
   var [email, setEmail] = useState('');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState([{
     email: '',
     password: '',
-  });
+  }]);
   
   function handleSignIn() {
     setSignIn(true);
@@ -62,20 +60,23 @@ export default function SignInUpSwitch() {
       }
     }
   };
-  const handleSubmit = async (req: NextApiRequest, res: NextApiResponse) => {
-    
-    if (req.method === "POST") {
-      const { email, password } = req.body;
-      
-      try {
-        const result = await seedUsers(formData);
-        res.status(200).json({ success: true, data: result });
-      } catch (error) {
-        res.status(500).json({ success: false, message: 'DB Error' });
-      }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await fetch('/api/db', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+    const data = await res.json();
+    if (data.success) {
+      console.log('Form submitted successfully');
+      setEmail('');
+      setPassword('');
+      setPassConf('');
     } else {
-      res.setHeader('Allow', ['POST']);
-      res.status(405).end(`Method ${req.method} Not Allowed`);
+      console.log('Form submission failed');
     }
   };
   return (
@@ -99,7 +100,7 @@ export default function SignInUpSwitch() {
         }
         {signUp &&
           <>
-            <form action="" method="post" className="" onSubmit={(event) => handleSubmit}>
+            <form action="" method="post" className="" onSubmit={handleSubmit}>
               <input type="email" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Email address" required onChange={(event) => getEmail(event)} /><br />
               <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Password" required onChange={(event) => getPassword(event)} /><br />
               {passconf === '' ?
