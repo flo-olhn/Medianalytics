@@ -21,12 +21,12 @@ export async function POST(req: Request) {
         });
       });
       if (passwordMatched) {
-        return NextResponse.json({ success: true, data: passwordMatched});
+        return NextResponse.json({ success: true, message: 'Log in successful'});
       } else {
-        return NextResponse.json({ success: false, data: 'Invalid Credentials'});
+        return NextResponse.json({ success: false, message: 'Invalid Credentials'});
       }
     } else {
-      return NextResponse.json({ success: false, data: 'Invalid Credentials'});
+      return NextResponse.json({ success: false, message: 'Invalid Credentials'});
     }
     /*
     const passwordVerified = await new Promise((resolve, reject) => {

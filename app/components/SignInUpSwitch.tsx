@@ -11,6 +11,8 @@ export default function SignInUpSwitch() {
   var [email, setEmail] = useState('');
   const [validCredentials, setValidCredentials] = useState(true);
   const [emailExists, setEmailExists] = useState(false);
+  const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}$)");
+  const [passwordStrong, setPasswordStrong] = useState(false);
   
   function handleSignIn() {
     setSignIn(true);
@@ -29,13 +31,20 @@ export default function SignInUpSwitch() {
     const currentValue = event.target.value;
     password = currentValue;
     setPassword(currentValue);
-    setConfirmed();
+    if (strongRegex.exec(password)) {
+      setConfirmed();
+      setPasswordStrong(true);
+    } else {
+      setConfirmed();
+      setPasswordStrong(false);
+    }
+    
   };
   const getPassConf = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const currentValue = event.target.value;
     passconf = currentValue;
-    setPassConf(currentValue);
-    setConfirmed();
+    {setPassConf(currentValue);
+    setConfirmed();}
   };
   function setConfirmed() {
     if (password === '' || passconf === '') {
@@ -57,9 +66,6 @@ export default function SignInUpSwitch() {
       },
       body: JSON.stringify({email, password}),
     });
-    if (!res.ok) {
-      throw new Error(`HTTP error: ${res.status}`);
-    }
     const data = await res.json();
     if (data.success) {
       console.log('Form submitted successfully');
@@ -135,8 +141,14 @@ export default function SignInUpSwitch() {
                   <p className="hidden">An account with this email already exists</p>
                 </div>
               }
-              <input type="email" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Email address" value={email} required onChange={(event) => getEmail(event)} /><br />
-              <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Password" required value={password} onChange={(event) => getPassword(event)} /><br />
+              <input type="email" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border" placeholder="Email address" value={email} required onChange={(event) => getEmail(event)} /><br />
+              
+              <input type="password" name="password" id="password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*]).{8,}"
+                title="Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (!@#$%^&*) and be at least 8 characters long."
+                required
+                className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border" placeholder="Password"
+                value={password} onChange={(event) => getPassword(event)}
+              /><br />
               {passconf === '' ?
                 <input type="password" name="confirm-password" id="confirm-password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border  mt-6" placeholder="Confirm Password" required onChange={getPassConf} /> :
                 (passwordConfirmed ?
