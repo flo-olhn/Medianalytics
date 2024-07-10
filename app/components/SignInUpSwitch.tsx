@@ -9,6 +9,7 @@ export default function SignInUpSwitch() {
   var [password, setPassword] = useState('');
   var [passconf, setPassConf] = useState('');
   var [email, setEmail] = useState('');
+  const [validCredentials, setValidCredentials] = useState(true);
   
   function handleSignIn() {
     setSignIn(true);
@@ -87,8 +88,10 @@ export default function SignInUpSwitch() {
       setPassConf('');
       setEmail('');
       setPassword('');
+      setValidCredentials(true);
     } else {
       console.log('Form submission failed');
+      setValidCredentials(false);
     }
   };
   return (
@@ -104,6 +107,14 @@ export default function SignInUpSwitch() {
         {signIn &&
           <>
             <form action="" method="post" className="" onSubmit={handleLogin}>
+              {!validCredentials ?
+                <div className="relative text-red-500 bottom-4 h-12 w-full flex justify-center items-center">
+                  <p>Invalid credentials, try again</p>
+                </div> :
+                <div className="relative text-red-500 bottom-4 h-12" >
+                  <p className="hidden">Invalid credentials, try again</p>
+                </div>
+              }
               <input type="email" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Email address" value={email} required onChange={(event) => getEmail(event)} /><br />
               <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Password" value={password} required onChange={(event) => getPassword(event)} />
               <input type="submit" value="Sign In" className="w-full h-14 rounded bg-slate-200 outline-none mt-12 hover:bg-blue-500 hover:text-white hover:cursor-pointer transition duration-300 focus:bg-blue-600" />
