@@ -16,7 +16,6 @@ export async function POST(req: Request) {
         password TEXT NOT NULL
       );
     `;
-    console.log('Created "users" table');
     const { email, password } = await req.json();
     const hashedPassword = await new Promise((resolve, reject) => {
       bcrypt.hash(password, 10, function(err: any, hash: string | PromiseLike<string>) {
@@ -24,7 +23,6 @@ export async function POST(req: Request) {
         resolve(hash);
       });
     }) as string;
-    console.log(hashedPassword);
     try {
       const insertedUsers = await client.sql`
         INSERT INTO users(email, password) VALUES(${email}, ${hashedPassword}) ON CONFLICT (id) DO NOTHING;
@@ -34,7 +32,6 @@ export async function POST(req: Request) {
       console.error('Database error:', error);
       return NextResponse.json({ success: false, message: 'Database error' });
     }
-    console.log('Seeded new user');
   } catch (error) {
     console.error('Error seeding users:', error);
     throw error;

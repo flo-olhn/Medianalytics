@@ -48,7 +48,7 @@ export default function SignInUpSwitch() {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/users', {
+    const res = await fetch('/api/users/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -68,7 +68,28 @@ export default function SignInUpSwitch() {
     } else {
       console.log('Form submission failed');
     }
-    console.log('passconf', passconf, 'password', password, passwordConfirmed);
+  };
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await fetch('/api/users/login',  {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({email, password}),
+    });
+    if (!res.ok) {
+      throw new Error(`HTTP error: ${res.status}`);
+    }
+    const data = await res.json();
+    if (data.success) {
+      console.log('Form submitted successfully');
+      setPassConf('');
+      setEmail('');
+      setPassword('');
+    } else {
+      console.log('Form submission failed');
+    }
   };
   return (
     <>
@@ -82,9 +103,9 @@ export default function SignInUpSwitch() {
         {signIn ? <p className="absolute text-3xl font-bold top-36 p-0 m-0">Log in<br />to your account</p> : <p className="absolute text-3xl font-bold top-36 p-0 m-0">Create<br />your account</p>}
         {signIn &&
           <>
-            <form action="" method="post" className="">
-              <input type="email" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Email address" required /><br />
-              <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Password" required />
+            <form action="" method="post" className="" onSubmit={handleLogin}>
+              <input type="email" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Email address" value={email} required onChange={(event) => getEmail(event)} /><br />
+              <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Password" value={password} required onChange={(event) => getPassword(event)} />
               <input type="submit" value="Sign In" className="w-full h-14 rounded bg-slate-200 outline-none mt-12 hover:bg-blue-500 hover:text-white hover:cursor-pointer transition duration-300 focus:bg-blue-600" />
             </form>
           </>
