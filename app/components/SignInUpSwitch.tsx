@@ -10,6 +10,7 @@ export default function SignInUpSwitch() {
   var [passconf, setPassConf] = useState('');
   var [email, setEmail] = useState('');
   const [validCredentials, setValidCredentials] = useState(true);
+  const [emailExists, setEmailExists] = useState(false);
   
   function handleSignIn() {
     setSignIn(true);
@@ -66,8 +67,10 @@ export default function SignInUpSwitch() {
       setEmail('');
       setPassword('');
       setPasswordConfirmed(false);
+      setEmailExists(false);
     } else {
       console.log('Form submission failed');
+      setEmailExists(true);
     }
   };
   const handleLogin = async (e: React.FormEvent) => {
@@ -124,6 +127,14 @@ export default function SignInUpSwitch() {
         {signUp &&
           <>
             <form action="" method="post" className="" onSubmit={handleSubmit}>
+              {emailExists ?
+                <div className="relative text-red-500 bottom-4 h-12 w-full flex justify-center items-center">
+                  <p>An account with this email already exists</p>
+                </div> :
+                <div className="relative text-red-500 bottom-4 h-12" >
+                  <p className="hidden">An account with this email already exists</p>
+                </div>
+              }
               <input type="email" name="email" id="email" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 mb-6 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Email address" value={email} required onChange={(event) => getEmail(event)} /><br />
               <input type="password" name="password" id="password" className="w-full h-12 bg-slate-100 rounded px-5 py-5 border border-slate-300 outline-none focus:bg-slate-200 transition duration-300 focus:border-blue-500 focus:border " placeholder="Password" required value={password} onChange={(event) => getPassword(event)} /><br />
               {passconf === '' ?
