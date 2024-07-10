@@ -22,7 +22,7 @@ const RootLayout: React.FC <Props> = ({ children, session }) => {
   return (
     <html lang='en'>
       <SessionProvider session={session}>
-      <body className="{inter.className}">
+      <body className={inter.className}>
         
           {children}
         
