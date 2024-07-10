@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function SignInUpSwitch() {
   const [signIn, setSignIn] = useState(true);
@@ -12,7 +11,8 @@ export default function SignInUpSwitch() {
   var [email, setEmail] = useState('');
   const [validCredentials, setValidCredentials] = useState(true);
   const [emailExists, setEmailExists] = useState(false);
-  const router = useRouter();
+  const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}$)");
+  const [passwordStrong, setPasswordStrong] = useState(false);
   
   function handleSignIn() {
     setSignIn(true);
@@ -31,13 +31,20 @@ export default function SignInUpSwitch() {
     const currentValue = event.target.value;
     password = currentValue;
     setPassword(currentValue);
-    setConfirmed();
+    if (strongRegex.exec(password)) {
+      setConfirmed();
+      setPasswordStrong(true);
+    } else {
+      setConfirmed();
+      setPasswordStrong(false);
+    }
+    
   };
   const getPassConf = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const currentValue = event.target.value;
     passconf = currentValue;
-    setPassConf(currentValue);
-    setConfirmed();
+    {setPassConf(currentValue);
+    setConfirmed();}
   };
   function setConfirmed() {
     if (password === '' || passconf === '') {
@@ -67,7 +74,6 @@ export default function SignInUpSwitch() {
       setPassword('');
       setPasswordConfirmed(false);
       setEmailExists(false);
-      router.push('/dashboard');
     } else {
       console.log('Form submission failed');
       setEmailExists(true);
@@ -82,6 +88,9 @@ export default function SignInUpSwitch() {
       },
       body: JSON.stringify({email, password}),
     });
+    if (!res.ok) {
+      throw new Error(`HTTP error: ${res.status}`);
+    }
     const data = await res.json();
     if (data.success) {
       console.log('Form submitted successfully');
@@ -89,7 +98,6 @@ export default function SignInUpSwitch() {
       setEmail('');
       setPassword('');
       setValidCredentials(true);
-      router.push('/dashboard');
     } else {
       console.log('Form submission failed');
       setValidCredentials(false);

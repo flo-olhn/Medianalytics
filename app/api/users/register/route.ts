@@ -32,11 +32,8 @@ export async function POST(req: Request) {
       console.error('Database error:', error);
       return NextResponse.json({ success: false, message: 'Database error' });
     }
-    
   } catch (error) {
     console.error('Error seeding users:', error);
     throw error;
-  } finally {
-    await client.release();
   }
 }
