@@ -1,42 +1,48 @@
 'use client';
 
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 export default function SignInUpSwitch() {
-  const [signIn, setSignIn] = useState(true);
-  const [signUp, setSignUp] = useState(false);
+  const [toggleSignIn, setSignIn] = useState(true);
+  const [toggleSignUp, setSignUp] = useState(false);
   const [passwordConfirmed, setPasswordConfirmed] = useState(false);
   var [password, setPassword] = useState('');
   var [passconf, setPassConf] = useState('');
   var [email, setEmail] = useState('');
   const [validCredentials, setValidCredentials] = useState(true);
   const [emailExists, setEmailExists] = useState(false);
-  
+
   function handleSignIn() {
     setSignIn(true);
     setSignUp(false);
   };
+
   function handleSignUp() {
     setSignIn(false);
     setSignUp(true);
   };
+
   const getEmail = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const currentValue = event.target.value;
     email = currentValue;
     setEmail(currentValue);
-  }
+  };
+
   const getPassword = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const currentValue = event.target.value;
     password = currentValue;
     setPassword(currentValue);
     setConfirmed();
   };
+
   const getPassConf = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const currentValue = event.target.value;
     passconf = currentValue;
     setPassConf(currentValue);
     setConfirmed();
   };
+
   function setConfirmed() {
     if (password === '' || passconf === '') {
       setPasswordConfirmed(false);
@@ -48,6 +54,7 @@ export default function SignInUpSwitch() {
       }
     }
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = await fetch('/api/users/register', {
@@ -55,7 +62,7 @@ export default function SignInUpSwitch() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({email, password}),
+      body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
     if (data.success) {
@@ -65,27 +72,29 @@ export default function SignInUpSwitch() {
       setPassword('');
       setPasswordConfirmed(false);
       setEmailExists(false);
+      // Rediriger vers la page de tableau de bord après l'inscription
+      signIn('credentials', { redirect: true, email, password, callbackUrl: '/dashboard' });
     } else {
       console.log('Form submission failed');
       setEmailExists(true);
     }
   };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch('/api/users/login',  {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({email, password}),
+    const res = await signIn('credentials', {
+      redirect: false,
+      email,
+      password
     });
-    const data = await res.json();
-    if (data.success) {
+    if (res?.ok) {
       console.log('Form submitted successfully');
       setPassConf('');
       setEmail('');
       setPassword('');
       setValidCredentials(true);
+      // Rediriger vers la page de tableau de bord après la connexion
+      window.location.href = '/dashboard';
     } else {
       console.log('Form submission failed');
       setValidCredentials(false);
@@ -94,16 +103,16 @@ export default function SignInUpSwitch() {
   return (
     <>
       <div className="flex w-full h-16">
-        {signIn && <div className="flex w-1/2 h-full border-r border-slate-300 items-center justify-center" onClick={handleSignIn}>Sign In</div>}
-        {!signUp && <div className="flex w-1/2 h-full bg-slate-100 items-center justify-center text-gray-400 border-b border-slate-300 hover:cursor-pointer hover:bg-slate-200 transition duration-300" onClick={handleSignUp}>Sign Up</div>}
-        {!signIn && <div className="flex w-1/2 h-full bg-slate-100 items-center justify-center text-gray-400 border-b border-slate-300 hover:cursor-pointer hover:bg-slate-200 transition duration-300" onClick={handleSignIn}>Sign In</div>}
-        {signUp && <div className="flex w-1/2 h-full border-l border-slate-300 items-center justify-center" onClick={handleSignUp}>Sign Up</div>}
+        {toggleSignIn && <div className="flex w-1/2 h-full border-r border-slate-300 items-center justify-center" onClick={handleSignIn}>Sign In</div>}
+        {!toggleSignUp && <div className="flex w-1/2 h-full bg-slate-100 items-center justify-center text-gray-400 border-b border-slate-300 hover:cursor-pointer hover:bg-slate-200 transition duration-300" onClick={handleSignUp}>Sign Up</div>}
+        {!toggleSignIn && <div className="flex w-1/2 h-full bg-slate-100 items-center justify-center text-gray-400 border-b border-slate-300 hover:cursor-pointer hover:bg-slate-200 transition duration-300" onClick={handleSignIn}>Sign In</div>}
+        {toggleSignUp && <div className="flex w-1/2 h-full border-l border-slate-300 items-center justify-center" onClick={handleSignUp}>Sign Up</div>}
       </div>
       <div className="w-full h-[calc(100%_-_4rem)] flex flex-col items-center justify-center">
-        {signIn ? <p className="absolute text-3xl font-bold top-36 p-0 m-0">Log in<br />to your account</p> : <p className="absolute text-3xl font-bold top-36 p-0 m-0">Create<br />your account</p>}
-        {signIn &&
+        {toggleSignIn ? <p className="absolute text-3xl font-bold top-36 p-0 m-0">Log in<br />to your account</p> : <p className="absolute text-3xl font-bold top-36 p-0 m-0">Create<br />your account</p>}
+        {toggleSignIn &&
           <>
-            <form action="" method="post" className="" onSubmit={handleLogin}>
+            <form action="" method="post" className="" onSubmit={(e) => handleLogin(e)}>
               {!validCredentials ?
                 <div className="relative text-red-500 bottom-4 h-12 w-full flex justify-center items-center">
                   <p>Invalid credentials, try again</p>
@@ -118,9 +127,9 @@ export default function SignInUpSwitch() {
             </form>
           </>
         }
-        {signUp &&
+        {toggleSignUp &&
           <>
-            <form action="" method="post" className="" onSubmit={handleSubmit}>
+            <form action="" method="post" className="" onSubmit={(event) => handleSubmit(event)}>
               {emailExists ?
                 <div className="relative text-red-500 bottom-4 h-12 w-full flex justify-center items-center">
                   <p>An account with this email already exists</p>

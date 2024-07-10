@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
+import { SessionProvider } from 'next-auth/react';
 import type { AppProps } from 'next/app';
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
     useEffect(() => {
         // Charger le SDK Facebook
         (function (d, s, id) {
@@ -29,7 +30,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         };
     }, []);
 
-    return <Component {...pageProps} />
+    return (
+        <SessionProvider session={session}>
+            <Component {...pageProps} />)
+        </SessionProvider>
+    )
 }
 
 export default MyApp;

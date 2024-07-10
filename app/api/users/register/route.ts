@@ -2,7 +2,7 @@ import { db } from "@vercel/postgres";
 import { NextResponse } from "next/server";
 
 const client = await db.connect();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 export async function POST(req: Request) {
   console.log('Request received:', req.method);
@@ -25,12 +25,12 @@ export async function POST(req: Request) {
     }) as string;
     try {
       const insertedUsers = await client.sql`
-        INSERT INTO users(email, password) VALUES(${email}, ${hashedPassword}) ON CONFLICT (id) DO NOTHING;
+        INSERT INTO users(email, password) VALUES(${email}, ${hashedPassword});
       `;
-      return NextResponse.json({ success: true, data: insertedUsers.rows[0]});
+      return NextResponse.json({ success: true, message: 'user registered'});
     } catch(error) {
-      console.error('Database error:', error);
-      return NextResponse.json({ success: false, message: 'Database error' });
+      console.error('Error creating user:', error);
+      return NextResponse.json({ success: false, error: 'Error creating user' });
     }
   } catch (error) {
     console.error('Error seeding users:', error);

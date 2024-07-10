@@ -1,21 +1,22 @@
-import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 
-export default function SignInForm() {
+export default function SignUpForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        const result = await signIn('credentials', {
-            redirect: false,
-            email,
-            password,
+        const response = await fetch('/api/users/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
         });
-        if (result?.ok) {
+        if (response.ok) {
             window.location.href = '/dashboard';
         } else {
-            alert('Failed to sign in');
+            alert('Failed to sign up');
         }
     };
 
@@ -35,7 +36,7 @@ export default function SignInForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
             />
-            <button type="submit">Sign In</button>
+            <button type="submit">Sign Up</button>
         </form>
     );
 }

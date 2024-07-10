@@ -1,10 +1,30 @@
+'use client';
 
-import React from "react";
+import { useSession, signIn } from 'next-auth/react';
+import { useEffect } from 'react';
 
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col h-full w-full">
-      <h1>Dashboard</h1>
-    </main>
-  );
+export default function Dashboard() {
+    const { data: session, status } = useSession();
+
+    useEffect(() => {
+        if (status === "unauthenticated") {
+          console.log('unauthenticated');
+          signIn('credentials', {redirect: true, email:'', password:'', callbackUrl: '/'});
+        }
+    }, [status]);
+
+    if (status === "loading") {
+        return <p>Loading...</p>;
+    }
+
+    if (status === "authenticated") {
+        return (
+            <div>
+                <h1>Dashboard</h1>
+                
+            </div>
+        );
+    }
+
+    return null;
 }
