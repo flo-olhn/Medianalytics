@@ -9,7 +9,7 @@ export default function Dashboard() {
     useEffect(() => {
         if (status === "unauthenticated") {
           console.log('unauthenticated');
-          signIn('credentials', {redirect: true, email:'', password:'', callbackUrl: '/'});
+          signIn();
         }
     }, [status]);
 
