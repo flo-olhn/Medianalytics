@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import AddAccount from './dashboard/AddAccount';
 
 declare global {
     interface Window {
@@ -54,7 +55,7 @@ const FacebookLoginButton: React.FC = () => {
 
         window.fbAsyncInit = () => {
             window.FB.init({
-                appId: '1537772970496693', // Remplacez 'YOUR_APP_ID' par l'ID de votre application
+                appId: process.env.NEXT_PUBLIC_FB_APPID, // Remplacez 'YOUR_APP_ID' par l'ID de votre application
                 cookie: true,
                 xfbml: true,
                 version: 'v20.0'
@@ -97,16 +98,9 @@ const FacebookLoginButton: React.FC = () => {
     };
 
     return (
-        <div>
-            {isLoggedIn ? (
-                <div>
-                    <p>Bienvenue, {userName}!</p>
-                    <button onClick={handleLogout} style={buttonStyle}>Déconnexion</button>
-                </div>
-            ) : (
-                <button onClick={handleLogin} style={buttonStyle}>Connexion avec Facebook</button>
-            )}
-        </div>
+        <button className='' onClick={handleLogin}>
+            <AddAccount ></AddAccount>
+        </button>
     );
 };
 
