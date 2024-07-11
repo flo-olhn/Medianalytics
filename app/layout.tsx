@@ -4,11 +4,11 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 
 const inter = Inter({ subsets: ["latin"] });
 
-interface Props {
+interface LayoutProps {
   session: Session | null;
   children: React.ReactNode;
 }
@@ -34,7 +34,7 @@ export default RootLayout;*/
 export default function RootLayout({
   children,
   session
-}: Props) {
+}: LayoutProps) {
   return (
     <html lang="en">
       <SessionProvider session={session}>
