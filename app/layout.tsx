@@ -9,7 +9,6 @@ const inter = Inter({ subsets: ["latin"] });
 
 interface LayoutProps {
   children: React.ReactNode;
-  session: Session | null;
 }
 
 export default function RootLayout({ children }: LayoutProps) {
