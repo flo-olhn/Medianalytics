@@ -1,3 +1,5 @@
+'use client';
+
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
@@ -10,11 +12,11 @@ interface LayoutProps {
   session: Session | null;
 }
 
-export default function RootLayout({ children, session }: LayoutProps) {
+export default function RootLayout({ children }: LayoutProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider session={session}>
+        <SessionProvider>
           {children}
         </SessionProvider>
       </body>
