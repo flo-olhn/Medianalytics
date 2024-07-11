@@ -103,10 +103,10 @@ export default function SignInUpSwitch() {
   return (
     <>
       <div className="flex w-full h-16">
-        {toggleSignIn && <div className="flex w-1/2 h-full border-r border-slate-300 items-center justify-center" onClick={handleSignIn}>Sign In</div>}
-        {!toggleSignUp && <div className="flex w-1/2 h-full bg-slate-100 items-center justify-center text-gray-400 border-b border-slate-300 hover:cursor-pointer hover:bg-slate-200 transition duration-300" onClick={handleSignUp}>Sign Up</div>}
-        {!toggleSignIn && <div className="flex w-1/2 h-full bg-slate-100 items-center justify-center text-gray-400 border-b border-slate-300 hover:cursor-pointer hover:bg-slate-200 transition duration-300" onClick={handleSignIn}>Sign In</div>}
-        {toggleSignUp && <div className="flex w-1/2 h-full border-l border-slate-300 items-center justify-center" onClick={handleSignUp}>Sign Up</div>}
+        {toggleSignIn && <div className="flex w-1/2 h-full border-slate-300 items-center justify-center" onClick={handleSignIn}>Sign In</div>}
+        {!toggleSignUp && <div className="flex w-1/2 h-full bg-slate-100 items-center justify-center text-gray-400 border-b border-l border-slate-300 hover:cursor-pointer hover:bg-slate-200 transition duration-300" onClick={handleSignUp}>Sign Up</div>}
+        {!toggleSignIn && <div className="flex w-1/2 h-full bg-slate-100 items-center justify-center text-gray-400 border-b border-r border-b border-slate-300 hover:cursor-pointer hover:bg-slate-200 transition duration-300" onClick={handleSignIn}>Sign In</div>}
+        {toggleSignUp && <div className="flex w-1/2 h-full border-slate-300 items-center justify-center" onClick={handleSignUp}>Sign Up</div>}
       </div>
       <div className="w-full h-[calc(100%_-_4rem)] flex flex-col items-center justify-center">
         {toggleSignIn ? <p className="absolute text-3xl font-bold top-36 p-0 m-0">Log in<br />to your account</p> : <p className="absolute text-3xl font-bold top-36 p-0 m-0">Create<br />your account</p>}

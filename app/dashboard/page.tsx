@@ -19,7 +19,6 @@ export default function Dashboard() {
     }
 
     if (status === "authenticated") {
-        //redirect('/dashboard');
         return (
             <div>Dashboard</div>
         )
