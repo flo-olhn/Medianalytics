@@ -73,7 +73,7 @@ export default function SignInUpSwitch() {
       setPasswordConfirmed(false);
       setEmailExists(false);
       // Rediriger vers la page de tableau de bord après l'inscription
-      signIn('credentials', { redirect: true, email, password, callbackUrl: '/dashboard' });
+      signIn('credentials', { redirect: true, email, password, callbackUrl: '/dashboard'});
     } else {
       console.log('Form submission failed');
       setEmailExists(true);

@@ -17,30 +17,32 @@ export const metadata: Metadata = {
   title: "Medianalytics",
   description: "Made with ♥️ by ctzN",
 };*/
-
+/*
 const RootLayout: React.FC <Props> = ({ children, session }) => {
   return (
     <html lang='en'>
       <SessionProvider session={session}>
-      <body className={inter.className}>
-        
+        <body className={inter.className}>
           {children}
-        
-      </body>
+        </body>
       </SessionProvider>
     </html>
   )
 }
-export default RootLayout;
-/*
+export default RootLayout;*/
+
 export default function RootLayout({
   children,
+  session
 }: Readonly<{
   children: React.ReactNode;
+  session: Session | null;
 }>) {
   return (
     <html lang="en">
+      <SessionProvider session={session}>
         <body className={inter.className}>{children}</body>
+      </SessionProvider>
     </html>
   );
-}*/
+}

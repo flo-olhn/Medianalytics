@@ -1,6 +1,7 @@
 'use client';
 
 import { useSession, signIn } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function Dashboard() {
@@ -18,12 +19,10 @@ export default function Dashboard() {
     }
 
     if (status === "authenticated") {
+        //redirect('/dashboard');
         return (
-            <div>
-                <h1>Dashboard</h1>
-                
-            </div>
-        );
+            <div>Dashboard</div>
+        )
     }
 
     return null;
