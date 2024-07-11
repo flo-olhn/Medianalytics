@@ -9,8 +9,8 @@ import { Session } from "next-auth";
 const inter = Inter({ subsets: ["latin"] });
 
 interface Props {
-  session: Session | null
-  children: React.ReactNode
+  session: Session | null;
+  children: React.ReactNode;
 }
 /*
 export const metadata: Metadata = {
@@ -34,10 +34,7 @@ export default RootLayout;*/
 export default function RootLayout({
   children,
   session
-}: Readonly<{
-  children: React.ReactNode;
-  session: Session | null;
-}>) {
+}: Props) {
   return (
     <html lang="en">
       <SessionProvider session={session}>
