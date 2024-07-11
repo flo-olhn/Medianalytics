@@ -1,8 +1,9 @@
 'use client';
 
 import { useSession, signIn } from 'next-auth/react';
-import { redirect } from 'next/navigation';
 import { useEffect } from 'react';
+import NavTop from '../components/dashboard/NavTop';
+import NavRight from '../components/dashboard/NavRight';
 
 export default function Dashboard() {
     const { data: session, status } = useSession();
@@ -20,7 +21,11 @@ export default function Dashboard() {
 
     if (status === "authenticated") {
         return (
-            <div>Dashboard</div>
+            
+            <div className='flex w-full h-full bg-slate-200'>
+                <NavTop></NavTop>
+                <NavRight></NavRight>
+            </div>
         )
     }
 
