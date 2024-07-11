@@ -7,13 +7,14 @@ const inter = Inter({ subsets: ["latin"] });
 
 interface LayoutProps {
   children: React.ReactNode;
+  session: Session | null;
 }
 
-export default function RootLayout({ children }: LayoutProps) {
+export default function RootLayout({ children, session }: LayoutProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider>
+        <SessionProvider session={session}>
           {children}
         </SessionProvider>
       </body>
