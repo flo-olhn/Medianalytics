@@ -11,7 +11,8 @@ const handler = NextAuth({
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" }
             },
-            authorize: async (credentials) => {
+            authorize: async (credentials, req) => {
+                if (!credentials) return null;
                 const client = await db.connect();
                 try {
                     const result = await client.sql`
@@ -33,9 +34,6 @@ const handler = NextAuth({
             }
         })
     ],
-    session: {
-        jwt: true,
-    },
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
@@ -44,8 +42,10 @@ const handler = NextAuth({
             return token;
         },
         async session({ session, token }) {
-            if (token?.id) {
-                session.user.id = token.id;
+            if (session.user) {
+                session.user.id = token.id as string;
+            } else {
+                session.user = { id: token.id as string };
             }
             return session;
         }
