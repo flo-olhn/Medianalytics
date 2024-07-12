@@ -3,115 +3,24 @@
 import React, { useEffect, useState } from 'react';
 import AddAccount from './dashboard/AddAccount';
 
-declare global {
-    interface Window {
-        FB: any;
-        fbAsyncInit: () => void;
-    }
-}
-
-const FacebookLoginButton: React.FC = () => {
-    const [isSdkLoaded, setIsSdkLoaded] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userName, setUserName] = useState<string | null>(null);
-
-    useEffect(() => {
-        const checkSdkLoad = () => {
-            if (window.FB) {
-                setIsSdkLoaded(true);
-                checkLoginState();
-            }
-        };
-
-        const checkLoginState = () => {
-            if (window.FB) {
-                window.FB.getLoginStatus((response: any) => {
-                    statusChangeCallback(response);
-                });
-            }
-        };
-
-        const loadSdkAsynchronously = () => {
-            ((d, s, id) => {
-                let js: HTMLScriptElement;
-                const fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) {
-                    checkSdkLoad();
-                    return;
-                }
-                js = d.createElement(s) as HTMLScriptElement;
-                js.id = id;
-                js.src = "https://connect.facebook.net/en_US/sdk.js";
-                js.onload = checkSdkLoad;
-                if (fjs && fjs.parentNode) {
-                    fjs.parentNode.insertBefore(js, fjs);
-                } else {
-                    d.head.appendChild(js);
-                }
-            })(document, 'script', 'facebook-jssdk');
-        };
-
-        loadSdkAsynchronously();
-
-        window.fbAsyncInit = () => {
-            window.FB.init({
-                appId: process.env.NEXT_PUBLIC_FB_APPID, // Remplacez 'YOUR_APP_ID' par l'ID de votre application
-                cookie: true,
-                xfbml: true,
-                version: 'v20.0'
-            });
-            checkSdkLoad();
-        };
-    }, []);
-
-    const statusChangeCallback = (response: any) => {
-        if (response.status === 'connected') {
-            setIsLoggedIn(true);
-            fetchUserData();
-        } else {
-            setIsLoggedIn(false);
-            setUserName(null);
-        }
-    };
-
-    const fetchUserData = () => {
-        window.FB.api('/me', (response: any) => {
-            setUserName(response.name);
-        });
-    };
+const FacebookLoginButton = () => {
 
     const handleLogin = () => {
-        if (isSdkLoaded && window.FB) {
-            window.FB.login((response: any) => {
-                statusChangeCallback(response);
-                console.log(response.authResponse.userID, response.authResponse.accessToken); // getting user info after logging (userID + accessToken)
-            }, { scope: 'pages_show_list,instagram_basic,pages_read_engagement' });
-        }
-    };
-
-    const handleLogout = () => {
-        if (isSdkLoaded && window.FB) {
-            window.FB.logout((response: any) => {
-                statusChangeCallback(response);
-            });
-        }
+        console.log('here');
+        const clientId = process.env.NEXT_PUBLIC_FB_APPID;
+        const display = 'page';
+        const extras = '{"setup":{"channel":"IG_API_ONBOARDING"}';
+        const redirectUri = 'https://localhost:3000/dashboard';
+        const scope = 'instagram_basic,instagram_content_publish,instagram_manage_comments,instagram_manage_insights,pages_show_list,pages_read_engagement';
+        const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=token`;
+        window.location.href = url;
     };
 
     return (
-        <button className='' onClick={handleLogin}>
-            <AddAccount ></AddAccount>
+        <button onClick={handleLogin}>
+            <AddAccount></AddAccount>
         </button>
     );
-};
-
-const buttonStyle = {
-    backgroundColor: '#4267B2',
-    color: 'white',
-    border: 'none',
-    padding: '10px 20px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    borderRadius: '5px',
 };
 
 export default FacebookLoginButton;
