@@ -12,7 +12,7 @@ export async function POST(req: Request) {
         const createTable = await client.sql`
             CREATE TABLE IF NOT EXISTS accounts (
                 id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-                user_id TEXT NOT NULL,
+                user_id UUID NOT NULL,
                 llt TEXT NOT NULL UNIQUE,
                 fb_id TEXT NOT NULL UNIQUE,
                 fb_Name TEXT NOT NULL,
@@ -24,14 +24,16 @@ export async function POST(req: Request) {
         console.log(userId, longLivedToken, fbId, fbName, igId, igName);
         try {
             const insertAccount = await client.sql`
-        INSERT INTO accounts(user_id, llt, fb_id, fb_name, ig_id, ig_name) VALUES(${userId}, ${longLivedToken}, ${fbId}, ${fbName}, ${igId}, ${igName});
-      `;
+                INSERT INTO accounts(user_id, llt, fb_id, fb_name, ig_id, ig_name) VALUES(${userId}, ${longLivedToken}, ${fbId}, ${fbName}, ${igId}, ${igName});
+            `;
             return NextResponse.json({ success: true, message: 'account added' });
         } catch (error) {
             return NextResponse.json({ success: false, error: 'Error adding account' });
         }
     } catch (error) {
         throw error;
+    } finally {
+        client.release();
     }
 }
 

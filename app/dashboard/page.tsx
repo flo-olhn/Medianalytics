@@ -4,9 +4,6 @@ import { useSession, signIn } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import NavTop from '../components/dashboard/NavTop';
 import NavRight from '../components/dashboard/NavRight';
-import { stringify } from 'querystring';
-import getToken from '../components/FacebookLoginBtn';
-import getFbData from '../components/FacebookLoginBtn';
 
 export default function Dashboard() {
     //const router = useRouter();
@@ -19,6 +16,8 @@ export default function Dashboard() {
     const [fbName, setFbName] = useState<string | null>(null);
     const [igId, setIgId] = useState<string | null>(null);
     const [igName, setIgName] = useState<string | null>(null);
+    const [acc, setAcc] = useState<any[]>([]);
+    
     if (status === "unauthenticated") {
         console.log('unauthenticated');
         signIn();
@@ -26,11 +25,25 @@ export default function Dashboard() {
     useEffect(() => {
         if (status === "authenticated" && session?.user) {
             setUserId(session.user.id);
-
-            const retrieveAccounts = () => {
-
+            const accounts: any[] = [];
+            const retrieveAccounts = async () => {
+                const res = await fetch('/api/facebook/get', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', 
+                    },
+                    body: JSON.stringify({ userId }),
+                });
+                const response = await res.json();
+                response.getAccounts.rows.forEach((account: { ig_id: any, ig_name: any }) => {
+                    console.log(account.ig_id);
+                    accounts.push(account);
+                });
+                console.log(accounts, typeof(accounts));
+                setAcc(accounts);
             };
-
+            retrieveAccounts();
+            
             const getToken = async () => {
                 const hash = window.location.hash;
                 if (hash) {
@@ -77,7 +90,7 @@ export default function Dashboard() {
                     console.log(igId, igName);
                     if (igId !== null && igName !== null) {
                         const addAccount = async () => {
-                            const res = await fetch('/api/facebook/callback', {
+                            const res = await fetch('/api/facebook/add', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json', 
@@ -89,7 +102,7 @@ export default function Dashboard() {
                                 setLLT(null);
                                 setFbId(null);
                                 setFbName(null);
-                                window.location.href = '/dashboard'
+                                //window.location.href = '/dashboard'
                             }
                         };
                         addAccount();
@@ -130,7 +143,7 @@ export default function Dashboard() {
     return (
         <div className='w-full h-full bg-slate-200'>
             <NavTop></NavTop>
-            <NavRight></NavRight>
+            <NavRight accounts={acc}></NavRight>
         </div>
     )
 }
