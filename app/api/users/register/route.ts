@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       });
     }) as string;
     try {
-      const insertedUsers = await client.sql`
+      const insertUser = await client.sql`
         INSERT INTO users(email, password) VALUES(${email}, ${hashedPassword});
       `;
       return NextResponse.json({ success: true, message: 'user registered'});

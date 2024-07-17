@@ -14,6 +14,7 @@ const FacebookLoginButton = () => {
         const scope = 'instagram_basic,instagram_content_publish,instagram_manage_comments,instagram_manage_insights,pages_show_list,pages_read_engagement';
         const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=token`;
         window.location.href = url;
+        //window.location.href = '/api/facebook/callback';
     };
 
     return (

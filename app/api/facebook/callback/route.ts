@@ -1,56 +1,39 @@
 import { NextResponse } from 'next/server';
+import { db } from '@vercel/postgres';
 
-export async function GET(req: Request) {
-  console.log('request received:', req.method);
-  console.log(req.url);
-  const { searchParams } = new URL(req.url);
-  const accessToken = searchParams.get('access_token');
-  const expiresIn = searchParams.get('expires_in');
-  //const userId = searchParams.get('user_id');
-  return NextResponse.json({
-    accessToken,
-    expiresIn,
-    //userId,
-  });
-  /*
-  const url = "https://www.facebook.com/v20.0/dialog/oauth";
-  const params = new URLSearchParams({
-    client_id: "1506990123556068",
-    display: "page",
-    extras: JSON.stringify({ setup: { channel: 'IG_API_ONBOARDING' } }),
-    redirect_uri: 'https://localhost:3000/dashboard',
-    response_type: "token",
-    scope: "instagram_basic,instagram_content_publish,instagram_manage_comments,instagram_manage_insights,pages_show_list,pages_read_engagement",
-  }).toString();
+const client = await db.connect();
 
-  const redirectUrl = `${url}?${params}`;
-  return NextResponse.redirect(redirectUrl);*/
-}
-
-/*
 export async function POST(req: Request) {
-  //const url = "https://www.facebook.com/v20.0/dialog/oauth?client_id=1506990123556068&display=page&extras={'setup':{'channel':'IG_API_ONBOARDING'}}&response_type=token&scope=instagram_basic,instagram_content_publish,instagram_manage_comments,instagram_manage_insights,pages_show_list,pages_read_engagement";
-  const url = '/api/facebook';
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    //const url = "https://www.facebook.com/v20.0/dialog/oauth?client_id=1506990123556068&display=page&extras={'setup':{'channel':'IG_API_ONBOARDING'}}&response_type=token&scope=instagram_basic,instagram_content_publish,instagram_manage_comments,instagram_manage_insights,pages_show_list,pages_read_engagement";
+    console.log('request received', req.method);
+    try {
+        await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
-    if (!response.ok) {
-      return NextResponse.json({ error: 'Error fetching data from Facebook' }, { status: response.status });
+        const createTable = await client.sql`
+            CREATE TABLE IF NOT EXISTS accounts (
+                id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+                user_id TEXT NOT NULL,
+                llt TEXT NOT NULL UNIQUE,
+                fb_id TEXT NOT NULL UNIQUE,
+                fb_Name TEXT NOT NULL,
+                ig_id TEXT NOT NULL UNIQUE,
+                ig_name TEXT NOT NULL
+            );
+        `;
+        const { userId, longLivedToken, fbId, fbName, igId, igName } = await req.json();
+        console.log(userId, longLivedToken, fbId, fbName, igId, igName);
+        try {
+            const insertAccount = await client.sql`
+        INSERT INTO accounts(user_id, llt, fb_id, fb_name, ig_id, ig_name) VALUES(${userId}, ${longLivedToken}, ${fbId}, ${fbName}, ${igId}, ${igName});
+      `;
+            return NextResponse.json({ success: true, message: 'account added' });
+        } catch (error) {
+            return NextResponse.json({ success: false, error: 'Error adding account' });
+        }
+    } catch (error) {
+        throw error;
     }
-
-    const data = await response.json();
-    console.log(data);
-    return NextResponse.json(data, { status: 200 });
-  } catch (error) {
-    console.error('Error during fetch:', error);
-    return NextResponse.json({ error: 'Internal Sever Error' }, { status: 500 });
-  }
 }
-*/
+
 
 //export { handler as GET, handler as POST };
