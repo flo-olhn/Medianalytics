@@ -6,8 +6,6 @@ import NavTop from '../components/dashboard/NavTop';
 import NavRight from '../components/dashboard/NavRight';
 
 export default function Dashboard() {
-    //const router = useRouter();
-    
     const { data: session, status } = useSession();
     const [userId, setUserId] = useState<string | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -17,11 +15,16 @@ export default function Dashboard() {
     const [igId, setIgId] = useState<string | null>(null);
     const [igName, setIgName] = useState<string | null>(null);
     const [acc, setAcc] = useState<any[]>([]);
-    
+    const [hasFetchedToken, setHasFetchedToken] = useState(false);
+    const [hasFetchedFbInfo, setHasFetchedFbInfo] = useState(false);
+    const [hasFetchedIgId, setHasFetchedIgId] = useState(false);
+    const [hasFetchedIgName, setHasFetchedIgName] = useState(false);
+    const [hasAddedAccount, setHasAddedAccount] = useState(false);
+
     if (status === "unauthenticated") {
-        console.log('unauthenticated');
         signIn();
     }
+
     useEffect(() => {
         if (status === "authenticated" && session?.user) {
             setUserId(session.user.id);
@@ -35,16 +38,20 @@ export default function Dashboard() {
                     body: JSON.stringify({ userId }),
                 });
                 const response = await res.json();
-                response.getAccounts.rows.forEach((account: { ig_id: any, ig_name: any, selected: boolean }) => {
-                    console.log(account.ig_id);
-                    accounts.length === 0 ? account.selected = true : account.selected = false;
-                    accounts.push(account);
-                });
-                console.log(accounts, typeof(accounts));
-                setAcc(accounts);
+                if (response?.success) {
+                    response.getAccounts.rows.forEach((account: { ig_id: any, ig_name: any, selected: boolean }) => {
+                        accounts.length === 0 ? account.selected = true : account.selected = false;
+                        accounts.push(account);
+                    });
+                    setAcc(accounts);
+                }
             };
             retrieveAccounts();
-            
+        }
+    }, [status, session?.user, userId, hasAddedAccount]);
+
+    useEffect(() => {
+        if (status === "authenticated" && session?.user && !hasFetchedToken) {
             const getToken = async () => {
                 const hash = window.location.hash;
                 if (hash) {
@@ -54,75 +61,97 @@ export default function Dashboard() {
                     if (access_token !== null) {
                         setAccessToken(access_token);
                         setLLT(llt);
+                        setHasFetchedToken(true);
                     }
                 }
             };
             getToken();
-            if (accessToken !== null && longLivedToken !== null) {
-                const getFbInfo = async () => {
-                    if (fbId === null && fbName === null) {
-                        const response = await fetch(`https://graph.facebook.com/v20.0/me?fields=id,name&access_token=${longLivedToken}`);
-                        const data = await response.json();
-                        //console.log(data.id, data.name);
-                        if (response.status === 200) {
-                            if (data.id !== null && data.name !== null) {
-                                setFbId(data.id);
-                                setFbName(data.name);
-                            }
-                        }
-                    }
-                };
-                getFbInfo();
-                if (fbId !== null && fbName !== null) {
-                    const getIgInfo = async() => {
-                        if (igId === null && igName === null) {
-                            const response = await fetch(`https://graph.facebook.com/v20.0/${fbId}/?fields=businesses&access_token=${longLivedToken}`);
-                            const d = await response.json();
-                            if (response.status === 200) {
-                                console.log(d.businesses.data);
-                                if (d.businesses.data[0].id !== null && d.businesses.data[0].name !== null) {
-                                    setIgId(d.businesses.data[0].id);
-                                    setIgName(d.businesses.data[0].name);
-                                }
-                            }
-                        }
-                    }
-                    getIgInfo();
-                    console.log(igId, igName);
-                    if (igId !== null && igName !== null) {
-                        const addAccount = async () => {
-                            const res = await fetch('/api/facebook/add', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json', 
-                                },
-                                body: JSON.stringify({ userId, longLivedToken, fbId, fbName, igId, igName }),
-                            });
-                            const data = await res.json();
-                            if (data.success) {
-                                setLLT(null);
-                                setFbId(null);
-                                setFbName(null);
-                                //window.location.href = '/dashboard'
-                            }
-                        };
-                        addAccount();
+        }
+    }, [status, session?.user, hasFetchedToken]);
+
+    useEffect(() => {
+        if (accessToken && longLivedToken && !hasFetchedFbInfo) {
+            const getFbInfo = async () => {
+                const response = await fetch(`https://graph.facebook.com/v20.0/me/accounts?access_token=${longLivedToken}`);
+                const data = await response.json();
+                if (response.status === 200) {
+                    if (data.id !== null && data.name !== null) {
+                        setFbId(data.data[0].id);
+                        setFbName(data.data[0].name);
+                        setHasFetchedFbInfo(true);
                     }
                 }
-            }
+            };
+            getFbInfo();
         }
-    }, [accessToken, fbId, fbName, igId, igName, longLivedToken, session, status, userId]);
+    }, [accessToken, longLivedToken, hasFetchedFbInfo]);
+
+    useEffect(() => {
+        if (fbId && longLivedToken && !hasFetchedIgId) {
+            const getIgId = async () => {
+                const response = await fetch(`https://graph.facebook.com/v20.0/${fbId}/?fields=instagram_business_account&access_token=${longLivedToken}`);
+                const data = await response.json();
+                if (response.status === 200) {
+                    if (data.instagram_business_account.id !== null) {
+                        setIgId(data.instagram_business_account.id);
+                        setHasFetchedIgId(true);
+                    }
+                }
+            };
+            getIgId();
+        }
+    }, [fbId, longLivedToken, hasFetchedIgId]);
+
+    useEffect(() => {
+        if (igId && longLivedToken && !hasFetchedIgName) {
+            const getIgName = async () => {
+                const response = await fetch(`https://graph.facebook.com/v20.0/${igId}/?fields=username&access_token=${longLivedToken}`);
+                const data = await response.json();
+                if (response.status === 200) {
+                    setIgName(data.username);
+                    setHasFetchedIgName(true);
+                }
+            };
+            getIgName();
+        }
+    }, [igId, longLivedToken, hasFetchedIgName]);
+
+    useEffect(() => {
+        if (userId && longLivedToken && fbId && fbName && igId && igName && !hasAddedAccount) {
+            const addAccount = async () => {
+                const res = await fetch('/api/facebook/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json', 
+                    },
+                    body: JSON.stringify({ userId, longLivedToken, fbId, fbName, igId, igName }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                    setLLT(null);
+                    setFbId(null);
+                    setFbName(null);
+                    setIgId(null);
+                    setIgName(null);
+                    setHasAddedAccount(true);
+                }
+            };
+            if (!hasAddedAccount) {
+                addAccount();
+            }
+            
+        }
+        
+    }, [userId, longLivedToken, fbId, fbName, igId, igName, hasAddedAccount]);
 
     if (status === "loading") {
         return <div>Loading...</div>
     }
 
-    
-    
     return (
         <div className='w-full h-full bg-slate-200'>
             <NavTop></NavTop>
             <NavRight accounts={acc}></NavRight>
         </div>
-    )
+    );
 }

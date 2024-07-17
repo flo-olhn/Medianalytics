@@ -15,7 +15,7 @@ export async function POST(req: Request) {
                 user_id UUID NOT NULL,
                 llt TEXT NOT NULL UNIQUE,
                 fb_id TEXT NOT NULL UNIQUE,
-                fb_Name TEXT NOT NULL,
+                fb_name TEXT NOT NULL,
                 ig_id TEXT NOT NULL UNIQUE,
                 ig_name TEXT NOT NULL
             );
@@ -32,8 +32,6 @@ export async function POST(req: Request) {
         }
     } catch (error) {
         throw error;
-    } finally {
-        client.release();
     }
 }
 
