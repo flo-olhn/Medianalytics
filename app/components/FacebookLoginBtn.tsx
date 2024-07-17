@@ -18,7 +18,7 @@ const FacebookLoginButton = () => {
     };
 
     return (
-        <button onClick={handleLogin}>
+        <button onClick={handleLogin} className='group/btn w-full h-full'>
             <AddAccount></AddAccount>
         </button>
     );
