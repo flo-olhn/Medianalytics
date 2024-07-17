@@ -35,8 +35,9 @@ export default function Dashboard() {
                     body: JSON.stringify({ userId }),
                 });
                 const response = await res.json();
-                response.getAccounts.rows.forEach((account: { ig_id: any, ig_name: any }) => {
+                response.getAccounts.rows.forEach((account: { ig_id: any, ig_name: any, selected: boolean }) => {
                     console.log(account.ig_id);
+                    accounts.length === 0 ? account.selected = true : account.selected = false;
                     accounts.push(account);
                 });
                 console.log(accounts, typeof(accounts));
@@ -111,28 +112,6 @@ export default function Dashboard() {
             }
         }
     }, [accessToken, fbId, fbName, igId, igName, longLivedToken, session, status, userId]);
-    /*
-    useEffect(() => {
-        if (accessToken !== null && longLivedToken !== null) {
-            console.log(accessToken);
-            console.log(longLivedToken);
-            const getFbData = async () => {
-                if (fbId === null && fbName === null) {
-                    const response = await fetch("https://graph.facebook.com/v20.0/me?fields=id,name&access_token=EAAVamXrZBnOQBOZCBXfkWuVUXLc0Qgxu6JJXbPVc3DJFfTh0CZBdDZC36qfDCnw0fweTnkcK2JceQjnli3Qj7lLu54owJZAl5TcLd2gNCnq53K9i1y5BQfSX3qkDIvq8L6vD7YZCsyNiGSdNZCZBOc8jz75K4jTshluj3nR1PPb5Tn66VRZAtGufshgwZB6ykWZCZBTmJQZDZD")
-                    const data = await response.json();
-                    //console.log(data.id, data.name);
-                    if (response?.status === 200) {
-                        if (data.id !== '' && data.name !== '') {
-                            setFbId(data.id);
-                            setFbName(data.name);
-                        }
-                    }
-                }
-            }
-            getFbData();
-            console.log(fbId, fbName);
-        }
-    }, [accessToken, fbId, fbName, longLivedToken]);*/
 
     if (status === "loading") {
         return <div>Loading...</div>
