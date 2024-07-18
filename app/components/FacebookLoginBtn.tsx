@@ -10,9 +10,11 @@ const FacebookLoginButton = () => {
         const clientId = process.env.NEXT_PUBLIC_FB_APPID;
         const display = 'page';
         const extras = '{"setup":{"channel":"IG_API_ONBOARDING"}';
-        const redirectUri = 'https://localhost:3000/dashboard';
+        const uri = window.location.href;
+        //console.log(uri);
+        //const redirectUri = 'https://localhost:3000/dashboard'; // to change for deployment
         const scope = 'instagram_basic,instagram_content_publish,instagram_manage_comments,instagram_manage_insights,pages_show_list,pages_read_engagement';
-        const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=token`;
+        const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${clientId}&redirect_uri=${encodeURIComponent(uri)}&scope=${scope}&response_type=token`;
         window.location.href = url;
         //window.location.href = '/api/facebook/callback';
     };
