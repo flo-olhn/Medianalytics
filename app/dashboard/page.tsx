@@ -135,11 +135,11 @@ export default function Dashboard() {
                 });
                 const data = await res.json();
                 if (data.success) {
-                    //setLLT(null);
-                    //setFbId(null);
-                    //setFbName(null);
-                    //setIgId(null);
-                    //setIgName(null);
+                    setLLT(null);
+                    setFbId(null);
+                    setFbName(null);
+                    setIgId(null);
+                    setIgName(null);
                     setHasAddedAccount(true);
                 }
             };
