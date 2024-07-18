@@ -1,9 +1,9 @@
-export default function AccountInsights() {
+export default function AccountInsights(props: { followers: number }) {
   return (
     <div className="flex justify-center text-sm w-[calc(100%_-_8rem)] h-16 border-b border-slate-300">
       <div className="flex flex-col justify-center h-full w-40 border-x border-slate-300">
         <p className="flex self-center top-0">Followers</p>
-        <p className="flex self-center text-xl">0</p>
+        <p className="flex self-center text-xl">{props.followers}</p>
       </div>
       <div className="flex flex-col justify-center h-full w-40">
         <p className="flex self-center top-0">Impressions</p>

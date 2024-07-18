@@ -1,17 +1,23 @@
-import { AwaitedReactNode, JSXElementConstructor, Key, MouseEvent, ReactElement, ReactEventHandler, ReactNode, ReactPortal } from "react";
+import { Dispatch, MouseEvent, SetStateAction } from "react";
 import FacebookLoginButton from "../FacebookLoginBtn";
-import AddAccount from "./AddAccount";
 import { useRouter } from "next/navigation";
 
-export default function NavRight(props: { accounts: any[]; }) {
+export default function NavRight(props: { accounts: any[]; selectedId: Dispatch<SetStateAction<string>>; }) {
   //var accounts = props.accounts;
   const r = useRouter();
+  //const [id, setId] = props.selectedId('');
   const handleSelectAccount = (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>, account: any) => {
     event.preventDefault();
     props.accounts.forEach((acc) => {
-      (account.account.ig_id === acc.ig_id) ? acc.selected = true : acc.selected = false;
+      if (account.account.ig_id === acc.ig_id)  {
+        acc.selected = true;
+        props.selectedId(acc.ig_id);
+      } else {
+        acc.selected = false;
+      }
     });
     r.refresh();
+    //console.log(id);
   };
   return (
     <>
@@ -38,6 +44,7 @@ export default function NavRight(props: { accounts: any[]; }) {
           <FacebookLoginButton></FacebookLoginButton>
         </div>
         <div className={`relative w-full h-full border-l border-slate-300`}></div>
+
       </div>
       
     </>

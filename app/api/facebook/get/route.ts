@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const { userId } = await req.json();
   try {
     const getAccounts = await client.sql`
-      SELECT ig_id, ig_name FROM users, accounts WHERE users.id = ${userId} AND users.id = accounts.user_id;
+      SELECT llt, ig_id, ig_name FROM users, accounts WHERE users.id = ${userId} AND users.id = accounts.user_id;
     `;
     return NextResponse.json({ success: true, getAccounts });
   } catch(error) {

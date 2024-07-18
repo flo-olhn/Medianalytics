@@ -15,6 +15,8 @@ export default function Dashboard() {
     const [igId, setIgId] = useState<string | null>(null);
     const [igName, setIgName] = useState<string | null>(null);
     const [acc, setAcc] = useState<any[]>([]);
+    const [followers, setFollowers] = useState<number>(0);
+    const [selectedId, setSelectedId] = useState<string>('');
     const [hasFetchedToken, setHasFetchedToken] = useState(false);
     const [hasFetchedFbInfo, setHasFetchedFbInfo] = useState(false);
     const [hasFetchedIgId, setHasFetchedIgId] = useState(false);
@@ -39,8 +41,13 @@ export default function Dashboard() {
                 });
                 const response = await res.json();
                 if (response?.success) {
-                    response.getAccounts.rows.forEach((account: { ig_id: any, ig_name: any, selected: boolean }) => {
-                        accounts.length === 0 ? account.selected = true : account.selected = false;
+                    response.getAccounts.rows.forEach((account: { llt: any, ig_id: any, ig_name: any, selected: boolean }) => {
+                        if (accounts.length === 0) {
+                            account.selected = true;
+                            setSelectedId(account.ig_id);
+                        } else {
+                            account.selected = false;
+                        }
                         accounts.push(account);
                     });
                     setAcc(accounts);
@@ -48,7 +55,7 @@ export default function Dashboard() {
             };
             retrieveAccounts();
         }
-    }, [status, session?.user, userId, hasAddedAccount]);
+    }, [status, session?.user, userId, hasAddedAccount, longLivedToken]);
 
     useEffect(() => {
         if (status === "authenticated" && session?.user && !hasFetchedToken) {
@@ -128,21 +135,39 @@ export default function Dashboard() {
                 });
                 const data = await res.json();
                 if (data.success) {
-                    setLLT(null);
-                    setFbId(null);
-                    setFbName(null);
-                    setIgId(null);
-                    setIgName(null);
+                    //setLLT(null);
+                    //setFbId(null);
+                    //setFbName(null);
+                    //setIgId(null);
+                    //setIgName(null);
                     setHasAddedAccount(true);
                 }
             };
             if (!hasAddedAccount) {
                 addAccount();
             }
-            
         }
-        
     }, [userId, longLivedToken, fbId, fbName, igId, igName, hasAddedAccount]);
+
+    useEffect (() => {
+        if (selectedId) {
+            acc.forEach((account) => {
+                if (account.selected) {
+                    const getFollowers = async () => {
+                        const response = await fetch(`https://graph.facebook.com/v3.2/${account.ig_id}?fields=business_discovery.username(${account.ig_name}){followers_count,media_count}&access_token=${account.llt}`);
+                        const data = await response.json();
+                        if (response?.ok) {
+                            setFollowers(data.business_discovery.followers_count);
+                            setSelectedId(account.ig_id);
+                        } else {
+                            setFollowers(0);
+                        }
+                    };
+                    getFollowers();
+                }
+            })
+        }
+    }, [acc, selectedId, userId]);
 
     if (status === "loading") {
         return <div>Loading...</div>
@@ -150,8 +175,8 @@ export default function Dashboard() {
 
     return (
         <div className='w-full h-full bg-slate-200'>
-            <NavTop></NavTop>
-            <NavRight accounts={acc}></NavRight>
+            <NavTop followers={followers}></NavTop>
+            <NavRight accounts={acc} selectedId={setSelectedId}></NavRight>
         </div>
     );
 }
