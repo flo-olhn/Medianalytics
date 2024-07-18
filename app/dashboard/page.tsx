@@ -154,7 +154,7 @@ export default function Dashboard() {
             acc.forEach((account) => {
                 if (account.selected) {
                     const getFollowers = async () => {
-                        const response = await fetch(`https://graph.facebook.com/v3.2/${account.ig_id}?fields=business_discovery.username(${account.ig_name}){followers_count,media_count}&access_token=${account.llt}`);
+                        const response = await fetch(`https://graph.facebook.com/v20.0/${account.ig_id}?fields=business_discovery.username(${account.ig_name}){followers_count}&access_token=${account.llt}`);
                         const data = await response.json();
                         if (response?.ok) {
                             setFollowers(data.business_discovery.followers_count);
@@ -164,6 +164,7 @@ export default function Dashboard() {
                         }
                     };
                     getFollowers();
+                    // get account insights :D
                 }
             })
         }
