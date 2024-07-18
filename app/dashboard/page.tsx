@@ -4,6 +4,7 @@ import { useSession, signIn } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import NavTop from '../components/dashboard/NavTop';
 import NavRight from '../components/dashboard/NavRight';
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
     const { data: session, status } = useSession();
@@ -22,6 +23,7 @@ export default function Dashboard() {
     const [hasFetchedIgId, setHasFetchedIgId] = useState(false);
     const [hasFetchedIgName, setHasFetchedIgName] = useState(false);
     const [hasAddedAccount, setHasAddedAccount] = useState(false);
+    const r = useRouter();
 
     if (status === "unauthenticated") {
         signIn();
@@ -41,13 +43,14 @@ export default function Dashboard() {
                 });
                 const response = await res.json();
                 if (response?.success) {
-                    response.getAccounts.rows.forEach((account: { llt: any, ig_id: any, ig_name: any, selected: boolean }) => {
+                    response.getAccounts.rows.forEach((account: { llt: any, ig_id: any, ig_name: any, selected: boolean, profile_pic: string }) => {
                         if (accounts.length === 0) {
                             account.selected = true;
                             setSelectedId(account.ig_id);
                         } else {
                             account.selected = false;
                         }
+                        account.profile_pic = '';
                         accounts.push(account);
                     });
                     setAcc(accounts);
@@ -152,6 +155,15 @@ export default function Dashboard() {
     useEffect (() => {
         if (selectedId) {
             acc.forEach((account) => {
+                const getProfilePic = async() => {
+                    const response = await fetch(`https://graph.facebook.com/v20.0/${account.ig_id}?fields=profile_picture_url&access_token=${account.llt}`);
+                    const url = await response.json();
+                    if (response?.ok) {
+                        account.profile_pic = url.profile_picture_url;
+                        r.refresh();
+                    }
+                };
+                getProfilePic();
                 if (account.selected) {
                     const getFollowers = async () => {
                         const response = await fetch(`https://graph.facebook.com/v20.0/${account.ig_id}?fields=business_discovery.username(${account.ig_name}){followers_count}&access_token=${account.llt}`);
@@ -168,7 +180,7 @@ export default function Dashboard() {
                 }
             })
         }
-    }, [acc, selectedId, userId]);
+    }, [acc, r, selectedId, userId]);
 
     if (status === "loading") {
         return <div>Loading...</div>
