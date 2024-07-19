@@ -89,7 +89,7 @@ export default function Dashboard() {
             const getFbInfo = async () => {
                 const response = await fetch(`https://graph.facebook.com/v20.0/me/accounts?access_token=${longLivedToken}`);
                 const data = await response.json();
-                if (response.status === 200) {
+                if (response?.ok) {
                     if (data.id !== null && data.name !== null) {
                         setFbId(data.data[0].id);
                         setFbName(data.data[0].name);
