@@ -1,5 +1,5 @@
 export default function AccountInsights(props: { accounts: any[]; followers: number; }) {
-  /*function number_format(n: number, d=2) {
+  /*function formatNumber(n: number, d=2) {
     var x = ('' + n).length;
     var p = Math.pow;
     d = p(10, d);
@@ -10,11 +10,18 @@ export default function AccountInsights(props: { accounts: any[]; followers: num
     if (num < 1000) {
       return num.toString();
     } else if (num >= 1000 && num < 1000000) {
-      return (num / 1000).toFixed(2).replace(/\.00$/, '') + 'k';
+      const formatted = (num / 1000).toFixed(2);
+      return parseFloat(formatted) === 1000
+        ? '1M'
+        : formatted.replace(/\.?0+$/, '') + 'k';
     } else if (num >= 1000000 && num < 1000000000) {
-      return (num / 1000000).toFixed(2).replace(/\.00$/, '') + 'M';
+      const formatted = (num / 1000000).toFixed(2);
+      return parseFloat(formatted) === 1000
+        ? '1B'
+        : formatted.replace(/\.?0+$/, '') + 'M';
     } else if (num >= 1000000000) {
-      return (num / 1000000000).toFixed(2).replace(/\.00$/, '') + 'B';
+      const formatted = (num / 1000000000).toFixed(2);
+      return formatted.replace(/\.?0+$/, '') + 'B';
     }
     return num.toString(); // Just in case
   }
