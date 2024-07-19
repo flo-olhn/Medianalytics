@@ -43,7 +43,7 @@ export default function Dashboard() {
                 });
                 const response = await res.json();
                 if (response?.success) {
-                    response.getAccounts.rows.forEach((account: { llt: any, ig_id: any, ig_name: any, selected: boolean, profile_pic: string, follower_cnt: number | null, impressions: number, reach: number, profile_views: number}) => {
+                    response.getAccounts.rows.forEach((account: { llt: any, ig_id: any, ig_name: any, selected: boolean, profile_pic: string, follower_cnt: number | null, impressions: number, reach: number, profile_views: number, impressions_yday: number, reach_yday: number, profile_views_yday: number}) => {
                         if (accounts.length === 0) {
                             account.selected = true;
                             setSelectedId(account.ig_id);
@@ -55,6 +55,9 @@ export default function Dashboard() {
                         account.impressions = 0;
                         account.reach = 0;
                         account.profile_views = 0;
+                        account.impressions_yday = 0;
+                        account.reach_yday = 0;
+                        account.profile_views_yday = 0;
                         accounts.push(account);
                     });
                     setAcc(accounts);
@@ -194,13 +197,27 @@ export default function Dashboard() {
                                 account.impressions = data.data[1].values[1].value;
                                 account.reach = data.data[2].values[1].value;
                                 account.profile_views = data.data[3].values[1].value;
+                                account.impressions_yday = data.data[1].values[0].value;
+                                account.reach_yday = data.data[2].values[0].value;
+                                account.profile_views_yday = data.data[3].values[0].value;
                             } else {
                                 account.follower_cnt = null;
                                 account.impressions = data.data[0].values[1].value;
                                 account.reach = data.data[1].values[1].value;
                                 account.profile_views = data.data[2].values[1].value;
+                                account.impressions_yday = data.data[0].values[0].value;
+                                account.reach_yday = data.data[1].values[0].value;
+                                account.profile_views_yday = data.data[2].values[0].value;
                             }
                             r.refresh();
+                        } else {
+                            account.follower_cnt = null;
+                            account.impressions = 0;
+                            account.reach = 0;
+                            account.profile_views = 0;
+                            account.impressions_yday = 0;
+                            account.reach_yday = 0;
+                            account.profile_views_yday = 0;
                         }
                     };
                     getAccInsights();
