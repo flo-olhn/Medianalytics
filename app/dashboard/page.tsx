@@ -51,7 +51,7 @@ export default function Dashboard() {
                             account.selected = false;
                         }
                         account.profile_pic = '';
-                        account.follower_cnt = 0;
+                        account.follower_cnt = null;
                         account.impressions = 0;
                         account.reach = 0;
                         account.profile_views = 0;
@@ -188,7 +188,6 @@ export default function Dashboard() {
                     const getAccInsights = async () => {
                         const response = await fetch(`https://graph.facebook.com/v20.0/${account.ig_id}/insights?metric=follower_count,impressions,reach,profile_views&period=day&access_token=${account.llt}`);
                         const data = await response.json();
-                        console.log(data.data);
                         if (response?.ok) {
                             if (account.follower_cnt !== null) {
                                 account.follower_cnt = data.data[0].values[1].value;
@@ -201,6 +200,7 @@ export default function Dashboard() {
                                 account.reach = data.data[1].values[1].value;
                                 account.profile_views = data.data[2].values[1].value;
                             }
+                            r.refresh();
                         }
                     };
                     getAccInsights();
