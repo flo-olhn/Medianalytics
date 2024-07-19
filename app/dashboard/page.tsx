@@ -15,7 +15,7 @@ export default function Dashboard() {
     const [fbName, setFbName] = useState<string | null>(null);
     const [igId, setIgId] = useState<string | null>(null);
     const [igName, setIgName] = useState<string | null>(null);
-    const [acc, setAcc] = useState<any[]>([]);
+    const [accounts, setAcc] = useState<any[]>([]);
     const [followers, setFollowers] = useState<number>(0);
     const [selectedId, setSelectedId] = useState<string>('');
     const [hasFetchedToken, setHasFetchedToken] = useState(false);
@@ -43,7 +43,7 @@ export default function Dashboard() {
                 });
                 const response = await res.json();
                 if (response?.success) {
-                    response.getAccounts.rows.forEach((account: { llt: any, ig_id: any, ig_name: any, selected: boolean, profile_pic: string }) => {
+                    response.getAccounts.rows.forEach((account: { llt: any, ig_id: any, ig_name: any, selected: boolean, profile_pic: string, follower_cnt: number | null, impressions: number, reach: number, profile_views: number}) => {
                         if (accounts.length === 0) {
                             account.selected = true;
                             setSelectedId(account.ig_id);
@@ -51,6 +51,10 @@ export default function Dashboard() {
                             account.selected = false;
                         }
                         account.profile_pic = '';
+                        account.follower_cnt = 0;
+                        account.impressions = 0;
+                        account.reach = 0;
+                        account.profile_views = 0;
                         accounts.push(account);
                     });
                     setAcc(accounts);
@@ -155,7 +159,7 @@ export default function Dashboard() {
 
     useEffect (() => {
         if (selectedId) {
-            acc.forEach((account) => {
+            accounts.forEach((account) => {
                 const getProfilePic = async() => {
                     const response = await fetch(`https://graph.facebook.com/v20.0/${account.ig_id}?fields=profile_picture_url&access_token=${account.llt}`);
                     const url = await response.json();
@@ -172,16 +176,38 @@ export default function Dashboard() {
                         if (response?.ok) {
                             setFollowers(data.business_discovery.followers_count);
                             setSelectedId(account.ig_id);
+                            if (data.business_discovery.followers_count <= 100) {
+                                account.follower_cnt = null;
+                            }
                         } else {
                             setFollowers(0);
                         }
                     };
                     getFollowers();
-                    // get account insights :D
+                    
+                    const getAccInsights = async () => {
+                        const response = await fetch(`https://graph.facebook.com/v20.0/${account.ig_id}/insights?metric=follower_count,impressions,reach,profile_views&period=day&access_token=${account.llt}`);
+                        const data = await response.json();
+                        console.log(data.data);
+                        if (response?.ok) {
+                            if (account.follower_cnt !== null) {
+                                account.follower_cnt = data.data[0].values[1].value;
+                                account.impressions = data.data[1].values[1].value;
+                                account.reach = data.data[2].values[1].value;
+                                account.profile_views = data.data[3].values[1].value;
+                            } else {
+                                account.follower_cnt = null;
+                                account.impressions = data.data[0].values[1].value;
+                                account.reach = data.data[1].values[1].value;
+                                account.profile_views = data.data[2].values[1].value;
+                            }
+                        }
+                    };
+                    getAccInsights();
                 }
             })
         }
-    }, [acc, r, selectedId, userId]);
+    }, [accounts, r, selectedId]);
 
     if (status === "loading") {
         return <div>Loading...</div>
@@ -189,8 +215,8 @@ export default function Dashboard() {
 
     return (
         <div className='w-full h-full bg-slate-200'>
-            <NavTop followers={followers}></NavTop>
-            <NavRight accounts={acc} selectedId={setSelectedId}></NavRight>
+            <NavTop accounts={accounts} followers={followers}></NavTop>
+            <NavRight accounts={accounts} selectedId={setSelectedId}></NavRight>
         </div>
     );
 }
