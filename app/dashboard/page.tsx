@@ -17,6 +17,7 @@ export default function Dashboard() {
     const [igName, setIgName] = useState<string | null>(null);
     const [accounts, setAcc] = useState<any[]>([]);
     const [followers, setFollowers] = useState<number>(0);
+    const [latestPostId, setLatestPostId] = useState<string | null>(null);
     const [selectedId, setSelectedId] = useState<string>('');
     const [hasFetchedToken, setHasFetchedToken] = useState(false);
     const [hasFetchedFbInfo, setHasFetchedFbInfo] = useState(false);
@@ -146,7 +147,7 @@ export default function Dashboard() {
                 });
                 const data = await res.json();
                 if (data.success) {
-                    setLLT(null);
+                    //setLLT(null);
                     setFbId(null);
                     setFbName(null);
                     setIgId(null);
@@ -174,19 +175,21 @@ export default function Dashboard() {
                 getProfilePic();
                 if (account.selected) {
                     const getFollowers = async () => {
-                        const response = await fetch(`https://graph.facebook.com/v20.0/${account.ig_id}?fields=business_discovery.username(${account.ig_name}){followers_count}&access_token=${account.llt}`);
+                        const response = await fetch(`https://graph.facebook.com/v20.0/${account.ig_id}?fields=business_discovery.username(${account.ig_name}){followers_count,media}&access_token=${account.llt}`);
                         const data = await response.json();
                         if (response?.ok) {
                             setFollowers(data.business_discovery.followers_count);
                             setSelectedId(account.ig_id);
+                            setLatestPostId(data.business_discovery.media.data[0].id);
                             if (data.business_discovery.followers_count <= 100) {
                                 account.follower_cnt = null;
                             }
                         } else {
                             setFollowers(0);
+                            setLatestPostId(null);
                         }
                     };
-                    getFollowers();
+                    getFollowers();                    
                     
                     const getAccInsights = async () => {
                         const response = await fetch(`https://graph.facebook.com/v20.0/${account.ig_id}/insights?metric=follower_count,impressions,reach,profile_views&period=day&access_token=${account.llt}`);
@@ -225,6 +228,22 @@ export default function Dashboard() {
             })
         }
     }, [accounts, r, selectedId]);
+
+    useEffect(() => {
+        console.log(latestPostId)
+        if (latestPostId !== null) {
+            accounts.forEach((account) => {
+                const getLatestPostInsights = async () => {
+                    const response = await fetch(`https://graph.facebook.com/v20.0/${latestPostId}?fields=media_type,media_url,timestamp,comments_count,like_count&access_token=${account.llt}`);
+                    const data = await response.json();
+                    if (response?.ok) {
+                        console.log(data);
+                    }
+                };
+                getLatestPostInsights();
+            })
+        }
+    }, [accounts, latestPostId]);
 
     if (status === "loading") {
         return <div>Loading...</div>

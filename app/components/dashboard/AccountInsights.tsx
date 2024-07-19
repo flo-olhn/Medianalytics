@@ -55,7 +55,7 @@ export default function AccountInsights(props: { accounts: any[]; followers: num
       </div>
       <div className="flex flex-col justify-center h-full w-40">
         <p className="flex self-center text-slate-400">Impressions</p>
-        <p className="flex self-center justify-center text-xl">{formatNumber(imp)}
+        <div className="flex self-center justify-center text-xl">{formatNumber(imp)}
         {(imp - imp_yday >= 0) ?
           ((imp - imp_yday != 0) ? 
           <p className="flex self-center ml-2 text-xs text-green-500">+{formatNumber(imp - imp_yday)}</p> :
@@ -63,11 +63,11 @@ export default function AccountInsights(props: { accounts: any[]; followers: num
         ) :
           <p className="flex self-center ml-2 text-xs text-red-500">{formatNumber(imp - imp_yday)}</p>
         }
-        </p>
+        </div>
       </div>
       <div className="flex flex-col justify-center h-full w-40 border-l border-slate-300">
         <p className="flex self-center text-slate-400">Reach</p>
-        <p className="flex self-center text-xl">{formatNumber(reach)}
+        <div className="flex self-center text-xl">{formatNumber(reach)}
         {(reach - reach_yday >= 0) ?
           ((reach - reach_yday != 0) ? 
           <p className="flex self-center ml-2 text-xs text-green-500">+{formatNumber(reach - reach_yday)}</p> :
@@ -75,11 +75,11 @@ export default function AccountInsights(props: { accounts: any[]; followers: num
         ) :
           <p className="flex self-center ml-2 text-xs text-red-500">{formatNumber(reach - reach_yday)}</p>
         }
-        </p>
+        </div>
       </div>
       <div className="flex flex-col justify-center h-full w-40 border-x border-slate-300">
         <p className="flex self-center text-slate-400">Profile Views</p>
-        <p className="flex self-center text-xl">{formatNumber(p_views)}
+        <div className="flex self-center text-xl">{formatNumber(p_views)}
         {(p_views - p_views_yday >= 0) ?
           ((p_views - p_views_yday != 0) ? 
             <p className="flex self-center ml-2 text-xs text-green-500">+{formatNumber(p_views - p_views_yday)}</p> :
@@ -87,7 +87,7 @@ export default function AccountInsights(props: { accounts: any[]; followers: num
           ) :
           <p className="flex self-center ml-2 text-xs text-red-500">{formatNumber(p_views - p_views_yday)}</p>
         }
-        </p>
+        </div>
       </div>
     </div>
   );
