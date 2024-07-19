@@ -57,8 +57,9 @@ export default function Dashboard() {
                 }
             };
             retrieveAccounts();
+            r.refresh();
         }
-    }, [status, session?.user, userId, hasAddedAccount, longLivedToken]);
+    }, [status, session?.user, userId, hasAddedAccount, longLivedToken, r]);
 
     useEffect(() => {
         if (status === "authenticated" && session?.user && !hasFetchedToken) {
