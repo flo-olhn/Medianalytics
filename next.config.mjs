@@ -8,6 +8,12 @@ const nextConfig = {
         port: '',  // Port est généralement vide pour HTTPS
         pathname: '/**',  // Autorise toutes les images de ce domaine
       },
+      {
+        protocol: 'https',
+        hostname: '**.cdninstagram.com',
+        port: '',  // Port est généralement vide pour HTTPS
+        pathname: '/**',  // Autorise toutes les images de ce domaine
+      },
     ],
   }
 };

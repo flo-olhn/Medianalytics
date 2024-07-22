@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import NavTop from '../components/dashboard/NavTop';
 import NavRight from '../components/dashboard/NavRight';
 import { useRouter } from 'next/navigation';
+import LatestPost from '../components/dashboard/LatestPost';
 
 export default function Dashboard() {
     const { data: session, status } = useSession();
@@ -19,6 +20,7 @@ export default function Dashboard() {
     const [followers, setFollowers] = useState<number>(0);
     const [latestPostId, setLatestPostId] = useState<string | null>(null);
     const [selectedId, setSelectedId] = useState<string>('');
+    const [lpi, setLPI] = useState<{}>({});
     const [hasFetchedToken, setHasFetchedToken] = useState(false);
     const [hasFetchedFbInfo, setHasFetchedFbInfo] = useState(false);
     const [hasFetchedIgId, setHasFetchedIgId] = useState(false);
@@ -238,6 +240,7 @@ export default function Dashboard() {
                     const data = await response.json();
                     if (response?.ok) {
                         console.log(data);
+                        setLPI(data);
                     }
                 };
                 getLatestPostInsights();
@@ -251,8 +254,10 @@ export default function Dashboard() {
 
     return (
         <div className='w-full h-full bg-slate-200'>
+            <LatestPost lpi={lpi}></LatestPost>
             <NavTop accounts={accounts} followers={followers}></NavTop>
             <NavRight accounts={accounts} selectedId={setSelectedId}></NavRight>
+            
         </div>
     );
 }
