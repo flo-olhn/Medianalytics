@@ -27,6 +27,7 @@ export default function Dashboard() {
     const [hasFetchedIgName, setHasFetchedIgName] = useState(false);
     const [hasAddedAccount, setHasAddedAccount] = useState(false);
     const [hasFetchedLPId, setHasFetchedLPId] = useState(false);
+    const [hasFetchedAccInsights, setHasFetchedAccInsights] = useState(false);
     const r = useRouter();
 
     if (status === "unauthenticated") {
@@ -185,6 +186,7 @@ export default function Dashboard() {
                             setSelectedId(account.ig_id);
                             setLatestPostId(data.business_discovery.media.data[0].id);
                             setHasFetchedLPId(true);
+                            setHasFetchedAccInsights(true);
                             if (data.business_discovery.followers_count <= 100) {
                                 account.follower_cnt = null;
                             }
@@ -192,6 +194,7 @@ export default function Dashboard() {
                             setFollowers(0);
                             setLatestPostId(null);
                             setHasFetchedLPId(false);
+                            setHasFetchedAccInsights(false);
                         }
                     };
                     getFollowers();                    
@@ -226,6 +229,8 @@ export default function Dashboard() {
                             account.impressions_yday = 0;
                             account.reach_yday = 0;
                             account.profile_views_yday = 0;
+                            setLatestPostId(null);
+                            setLPI({});
                         }
                     };
                     getAccInsights();
@@ -235,21 +240,23 @@ export default function Dashboard() {
     }, [accounts, r, selectedId]);
 
     useEffect(() => {
-        console.log(latestPostId)
+        //console.log(latestPostId)
         if (latestPostId !== null && hasFetchedLPId) {
             accounts.forEach((account) => {
                 const getLatestPostInsights = async () => {
                     const response = await fetch(`https://graph.facebook.com/v20.0/${latestPostId}?fields=media_type,media_url,timestamp,comments_count,like_count&access_token=${account.llt}`);
                     const data = await response.json();
                     if (response?.ok) {
-                        console.log(data);
                         setLPI(data);
+                    } else {
+                        setLPI({});
                     }
+                    console.log(data);
                 };
                 getLatestPostInsights();
             })
         }
-    }, [accounts, hasFetchedLPId, latestPostId]);
+    }, [accounts, hasFetchedLPId, latestPostId,]);
 
     if (status === "loading") {
         return <div>Loading...</div>

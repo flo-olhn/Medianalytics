@@ -38,7 +38,6 @@ export default function AccountInsights(props: { accounts: any[]; followers: num
     if (account.selected) {
       if (account.follower_cnt !== null) {
         f_cnt = account.follower_cnt;
-        console.log(f_cnt);
       }
       imp = account.impressions;
       reach  = account.reach;
