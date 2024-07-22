@@ -26,6 +26,7 @@ export default function Dashboard() {
     const [hasFetchedIgId, setHasFetchedIgId] = useState(false);
     const [hasFetchedIgName, setHasFetchedIgName] = useState(false);
     const [hasAddedAccount, setHasAddedAccount] = useState(false);
+    const [hasFetchedLPId, setHasFetchedLPId] = useState(false);
     const r = useRouter();
 
     if (status === "unauthenticated") {
@@ -183,12 +184,14 @@ export default function Dashboard() {
                             setFollowers(data.business_discovery.followers_count);
                             setSelectedId(account.ig_id);
                             setLatestPostId(data.business_discovery.media.data[0].id);
+                            setHasFetchedLPId(true);
                             if (data.business_discovery.followers_count <= 100) {
                                 account.follower_cnt = null;
                             }
                         } else {
                             setFollowers(0);
                             setLatestPostId(null);
+                            setHasFetchedLPId(false);
                         }
                     };
                     getFollowers();                    
@@ -233,7 +236,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         console.log(latestPostId)
-        if (latestPostId !== null) {
+        if (latestPostId !== null && hasFetchedLPId) {
             accounts.forEach((account) => {
                 const getLatestPostInsights = async () => {
                     const response = await fetch(`https://graph.facebook.com/v20.0/${latestPostId}?fields=media_type,media_url,timestamp,comments_count,like_count&access_token=${account.llt}`);
@@ -246,7 +249,7 @@ export default function Dashboard() {
                 getLatestPostInsights();
             })
         }
-    }, [accounts, latestPostId]);
+    }, [accounts, hasFetchedLPId, latestPostId]);
 
     if (status === "loading") {
         return <div>Loading...</div>
