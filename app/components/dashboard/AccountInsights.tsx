@@ -38,6 +38,7 @@ export default function AccountInsights(props: { accounts: any[]; followers: num
     if (account.selected) {
       if (account.follower_cnt !== null) {
         f_cnt = account.follower_cnt;
+        console.log(f_cnt);
       }
       imp = account.impressions;
       reach  = account.reach;
@@ -51,7 +52,15 @@ export default function AccountInsights(props: { accounts: any[]; followers: num
     <div className="flex justify-center text-sm w-[calc(100%_-_8rem)] h-16 border-b border-slate-300">
       <div className="flex flex-col justify-center h-full w-40 border-x border-slate-300">
         <p className="flex self-center text-slate-400">Followers</p>
-        <p className="flex self-center text-xl">{formatNumber(props.followers)}</p>
+        <div className="flex self-center text-xl">{formatNumber(props.followers)}
+        {(f_cnt !== null) ?
+          (f_cnt > 0 ? 
+          <p className="flex self-center ml-2 text-xs text-green-500">+{formatNumber(f_cnt)}</p> :
+          <p className="flex self-center ml-2 text-xs text-slate-400">=</p>
+        ) :
+          <p className="flex self-center ml-2 text-xs text-red-500">{formatNumber(f_cnt)}</p>
+        }
+        </div>
       </div>
       <div className="flex flex-col justify-center h-full w-40">
         <p className="flex self-center text-slate-400">Impressions</p>
